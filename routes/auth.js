@@ -1,12 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport'); 
+const passport = require('passport');
+
 router.get('/login', (req, res) => {
     res.render('auth/login', {
         title: 'Iniciar Sesión',
         error: req.flash('error')
     });
 });
+
+router.post('/login', passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/auth/login',
+    failureFlash: true
+}));
 
 router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
 
@@ -16,14 +23,13 @@ router.get('/github/callback',
         failureFlash: true
     }),
     (req, res) => {
-        
-        req.flash('success', `Bienvenido, ${req.user.nombre || req.user.email}!`);
+        req.flash('success', `Bienvenido, ${req.user.nombre_usuario || req.user.email.split('@')[0]}!`);
         res.redirect('/');
     }
 );
 
 router.get('/logout', (req, res) => {
-    req.logout((err) => { 
+    req.logout((err) => {
         if (err) {
             console.error('Error al cerrar sesión:', err);
             return res.redirect('/');
@@ -33,7 +39,7 @@ router.get('/logout', (req, res) => {
                 console.error('Error al destruir la sesión:', err);
                 return res.redirect('/');
             }
-            res.clearCookie('connect.sid'); 
+            res.clearCookie('connect.sid');
             req.flash('success', 'Has cerrado sesión correctamente.');
             res.redirect('/auth/login');
         });

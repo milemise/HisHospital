@@ -1,7 +1,6 @@
 # Dependencias de Node
 /node_modules
 
-# Archivo de variables de entorno
 .env
 
 # Logs de debug
