@@ -1,0 +1,31 @@
+extends ../layout
+
+block content
+  .max-w-md.mx-auto.bg-white.mt-10.p-8.rounded-2xl.shadow-xl
+    h1.text-3xl.font-bold.text-blue-900.mb-6 Editar Turno ##{turno.id_turno}
+
+    form(action="/turnos/actualizar/" + turno.id_turno, method="POST" class="space-y-6")
+      div
+        label.block.text-sm.font-medium.text-gray-700 Paciente
+        select(name="id_paciente" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          each p in pacientes
+            option(value=p.id_paciente, selected=(p.id_paciente === turno.id_paciente))= p.nombre + ' ' + p.apellido + ' (DNI: ' + p.dni + ')'
+      div
+        label.block.text-sm.font-medium.text-gray-700 Médico
+        select(name="id_medico" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          each m in medicos
+            option(value=m.id_medico, selected=(m.id_medico === turno.id_medico))= m.nombre + ' ' + m.apellido
+      div
+        label.block.text-sm.font-medium.text-gray-700 Fecha y Hora
+        input(type="datetime-local", name="fecha_hora", value=turno.fecha_hora ? new Date(turno.fecha_hora).toISOString().slice(0, 16) : '' required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+      div
+        label.block.text-sm.font-medium.text-gray-700 Estado
+        select(name="estado" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          option(value="pendiente", selected=(turno.estado === 'pendiente')) Pendiente
+          option(value="confirmado", selected=(turno.estado === 'confirmado')) Confirmado
+          option(value="cancelado", selected=(turno.estado === 'cancelado')) Cancelado
+          option(value="finalizado", selected=(turno.estado === 'finalizado')) Finalizado
+
+      .flex.justify-end.space-x-4.mt-6
+        a(href="/turnos").bg-gray-600.hover:bg-gray-700.transition-colors.duration-300.text-white.font-semibold.py-2.px-4.rounded-md.shadow-md Cancelar
+        button(type="submit").bg-blue-600.hover:bg-blue-700.transition-colors.duration-300.text-white.font-semibold.py-2.px-6.rounded-md.shadow-md Actualizar Turno

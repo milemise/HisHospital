@@ -1,0 +1,38 @@
+extends ../layout
+
+block content
+  .max-w-7xl.mx-auto.bg-white.p-8.rounded-2xl.shadow-xl
+    .flex.justify-between.items-center.mb-6
+      h1.text-3xl.font-bold.text-blue-900 Gestión de Médicos
+      a(href="/medicos/nuevo").bg-blue-600.hover:bg-blue-700.transition-colors.duration-300.text-white.font-semibold.py-2.px-4.rounded-md.shadow-md Nuevo Médico
+
+    if medicos.length === 0
+      p.text-gray-600.mt-4 No hay médicos registrados en el sistema.
+    else
+      .overflow-x-auto.mt-6
+        table.min-w-full.bg-white.border.border-gray-200.rounded-lg.shadow-sm
+          thead.bg-blue-100.text-gray-700.uppercase.text-sm
+            tr
+              th.py-3.px-4.text-left.font-semibold ID
+              th.py-3.px-4.text-left.font-semibold Nombre Completo
+              th.py-3.px-4.text-left.font-semibold Especialidad
+              th.py-3.px-4.text-left.font-semibold Matrícula
+              th.py-3.px-4.text-left.font-semibold Teléfono
+              th.py-3.px-4.text-left.font-semibold Email
+              th.py-3.px-4.text-left.font-semibold Activo
+              th.py-3.px-4.text-center.font-semibold Acciones
+          tbody.divide-y.divide-gray-200
+            each medico in medicos
+              tr.hover:bg-gray-50.transition-colors.duration-100
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-800 #{medico.id_medico}
+                td.py-3.px-4.whitespace-nowrap.text-sm.font-medium.text-gray-900 #{medico.nombre} #{medico.apellido}
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{medico.especialidad ? medico.especialidad.nombre : 'N/A'}
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{medico.matricula}
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{medico.telefono || 'N/A'}
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{medico.email || 'N/A'}
+                td.py-3.px-4.whitespace-nowrap.text-sm.font-semibold
+                  span.px-2.inline-flex.text-xs.leading-5.font-semibold.rounded-full(class=(medico.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')) #{medico.activo ? 'Sí' : 'No'}
+                td.py-3.px-4.whitespace-nowrap.text-sm.flex.space-x-2.justify-center
+                  a(href="/medicos/editar/" + medico.id_medico).text-indigo-600.hover:text-indigo-800.font-medium.transition-colors Editar
+                  form(action="/medicos/eliminar/" + medico.id_medico, method="POST", onsubmit="return confirm('¿Está seguro de eliminar a este médico?');", style="display:inline-block;")
+                    button(type="submit").text-red-600.hover:text-red-800.font-medium.transition-colors Eliminar

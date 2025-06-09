@@ -1,0 +1,38 @@
+extends ../layout
+
+block content
+  .max-w-7xl.mx-auto.bg-white.p-8.rounded-2xl.shadow-xl
+    .flex.justify-between.items-center.mb-6
+      h1.text-3xl.font-bold.text-blue-900 Gestión de Pacientes
+      a(href="/pacientes/nuevo").bg-blue-600.hover:bg-blue-700.transition-colors.duration-300.text-white.font-semibold.py-2.px-4.rounded-md.shadow-md Nuevo Paciente
+
+    if pacientes.length === 0
+      p.text-gray-600.mt-4 No hay pacientes registrados en el sistema.
+    else
+      .overflow-x-auto.mt-6
+        table.min-w-full.bg-white.border.border-gray-200.rounded-lg.shadow-sm
+          thead.bg-blue-100.text-gray-700.uppercase.text-sm
+            tr
+              th.py-3.px-4.text-left.font-semibold ID
+              th.py-3.px-4.text-left.font-semibold Nombre Completo
+              th.py-3.px-4.text-left.font-semibold DNI
+              th.py-3.px-4.text-left.font-semibold Fecha Nacimiento
+              th.py-3.px-4.text-left.font-semibold Género
+              th.py-3.px-4.text-left.font-semibold Obra Social
+              th.py-3.px-4.text-left.font-semibold Activo
+              th.py-3.px-4.text-center.font-semibold Acciones
+          tbody.divide-y.divide-gray-200
+            each paciente in pacientes
+              tr.hover:bg-gray-50.transition-colors.duration-100
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-800 #{paciente.id_paciente}
+                td.py-3.px-4.whitespace-nowrap.text-sm.font-medium.text-gray-900 #{paciente.nombre} #{paciente.apellido}
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{paciente.dni}
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{paciente.fecha_nacimiento ? new Date(paciente.fecha_nacimiento).toLocaleDateString('es-ES') : 'N/A'}
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{paciente.genero}
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{paciente.obraSocial ? paciente.obraSocial.nombre : 'N/A'}
+                td.py-3.px-4.whitespace-nowrap.text-sm.font-semibold
+                  span.px-2.inline-flex.text-xs.leading-5.font-semibold.rounded-full(class=(paciente.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')) #{paciente.activo ? 'Sí' : 'No'}
+                td.py-3.px-4.whitespace-nowrap.text-sm.flex.space-x-2.justify-center
+                  a(href="/pacientes/editar/" + paciente.id_paciente).text-indigo-600.hover:text-indigo-800.font-medium.transition-colors Editar
+                  form(action="/pacientes/eliminar/" + paciente.id_paciente, method="POST", onsubmit="return confirm('¿Está seguro de eliminar a este paciente? Esto no es posible si tiene admisiones activas.');", style="display:inline-block;")
+                    button(type="submit").text-red-600.hover:text-red-800.font-medium.transition-colors Eliminar

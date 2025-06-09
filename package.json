@@ -1,0 +1,38 @@
+{
+  "name": "his_internacion",
+  "version": "1.0.0",
+  "description": "Sistema de Información Hospitalario para la gestión de internaciones.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "jest",
+    "tailwind:build": "tailwindcss -i ./public/css/tailwind.css -o ./public/css/style.css --minify",
+    "tailwind:watch": "tailwindcss -i ./public/css/tailwind.css -o ./public/css/style.css --watch"
+  },
+  "keywords": ["HIS", "Hospital", "Node.js", "Express", "Sequelize", "Pug", "Tailwind"],
+  "author": "Mile",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-flash": "^0.1.1",
+    "connect-session-sequelize": "^7.1.7",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "express-session": "^1.18.1",
+    "helmet": "^8.1.0",
+    "mysql2": "^3.14.1",
+    "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
+    "pug": "^3.0.3",
+    "sequelize": "^6.37.7" 
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.10",
+    "postcss": "^8.5.4",
+    "sequelize-cli": "^6.6.3",
+    "tailwindcss": "^4.1.8" 
+  }}

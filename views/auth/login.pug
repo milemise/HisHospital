@@ -1,0 +1,14 @@
+extends ../layout
+
+block content
+  .max-w-md.mx-auto.bg-white.mt-16.p-10.rounded-2xl.shadow-xl.text-center
+    h1.text-3xl.font-bold.text-blue-900.mb-6 Acceso al Sistema HIS
+
+    p.text-gray-600.mb-6 Inicia sesión con tu cuenta de GitHub.
+
+    // Botón de login con GitHub
+    .mt-4
+      a(href="/auth/github" class="bg-gray-800 hover:bg-gray-900 transition-colors duration-300 text-white font-semibold py-3 px-6 rounded-lg shadow-md flex items-center justify-center text-lg")
+        svg.w-6.h-6.mr-3(fill="currentColor" viewBox="0 0 20 20")
+          path(fill-rule="evenodd" d="M10 0C4.477 0 0 4.48 0 10c0 4.418 2.864 8.156 6.839 9.489.5.09.682-.217.682-.483 0-.237-.008-.867-.013-1.7a6.678 6.678 0 01-1.79-1.957c-.328-.707-.79-1.61-.177-1.986.545-.34.996-.065 1.258.187.48.813 1.254 1.157 1.748 1.403.494.246 1.018.069 1.264-.06.002-.132.052-.27.126-.403a4.013 4.013 0 00.78-2.09c-3.04-.336-6.22-1.503-6.22-6.742 0-1.517.54-2.76 1.458-3.738-.146-.34-.632-1.77.137-3.67 0 0 1.19-.374 3.9.72.113-.03.226-.06.34-.09s.228-.052.34-.08c.995-.274 2.072-.274 3.067 0 .113.03.226.06.34.09s.228.052.34.08c2.71.91 3.9.72 3.9.72.768 1.9.282 3.33.136 3.67.92.978 1.46 2.22 1.46 3.738 0 5.523-4.477 10-10 10-5.523 0-10-4.477-10-10z" clip-rule="evenodd")
+        span Iniciar sesión con GitHub

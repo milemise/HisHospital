@@ -1,0 +1,71 @@
+extends ../layout
+
+block content
+  .max-w-2xl.mx-auto.bg-white.mt-10.p-8.rounded-2xl.shadow-xl
+    h1.text-3xl.font-bold.text-blue-900.mb-6 Editar Paciente: #{paciente.nombre} #{paciente.apellido}
+
+    form(action="/pacientes/actualizar/" + paciente.id_paciente, method="POST" class="space-y-6")
+      .grid.grid-cols-1.md:grid-cols-2.gap-4
+        div
+          label.block.text-sm.font-medium.text-gray-700 Nombre
+          input(type="text", name="nombre", value=paciente.nombre required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+        div
+          label.block.text-sm.font-medium.text-gray-700 Apellido
+          input(type="text", name="apellido", value=paciente.apellido required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+        div
+          label.block.text-sm.font-medium.text-gray-700 DNI
+          input(type="text", name="dni", value=paciente.dni required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+        div
+          label.block.text-sm.font-medium.text-gray-700 Fecha de Nacimiento
+          input(type="date", name="fecha_nacimiento", value=paciente.fecha_nacimiento ? paciente.fecha_nacimiento.toISOString().split('T')[0] : '' required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+        div
+          label.block.text-sm.font-medium.text-gray-700 Género
+          select(name="genero" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+            option(value="Masculino", selected=(paciente.genero === 'Masculino')) Masculino
+            option(value="Femenino", selected=(paciente.genero === 'Femenino')) Femenino
+            option(value="Otro", selected=(paciente.genero === 'Otro')) Otro
+            option(value="No especificado", selected=(paciente.genero === 'No especificado')) No especificado
+        div
+          label.block.text-sm.font-medium.text-gray-700 Teléfono (Opcional)
+          input(type="text", name="telefono", value=paciente.telefono || '' class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+        div
+          label.block.text-sm.font-medium.text-gray-700 Email (Opcional)
+          input(type="email", name="email", value=paciente.email || '' class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+        div
+          label.block.text-sm.font-medium.text-gray-700 Dirección (Opcional)
+          input(type="text", name="direccion", value=paciente.direccion || '' class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+        div
+          label.block.text-sm.font-medium.text-gray-700 Grupo Sanguíneo (Opcional)
+          select(name="grupo_sanguineo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+            option(value="", selected=(!paciente.grupo_sanguineo)) Seleccionar
+            option(value="A+", selected=(paciente.grupo_sanguineo === 'A+')) A+
+            option(value="A-", selected=(paciente.grupo_sanguineo === 'A-')) A-
+            option(value="B+", selected=(paciente.grupo_sanguineo === 'B+')) B+
+            option(value="B-", selected=(paciente.grupo_sanguineo === 'B-')) B-
+            option(value="AB+", selected=(paciente.grupo_sanguineo === 'AB+')) AB+
+            option(value="AB-", selected=(paciente.grupo_sanguineo === 'AB-')) AB-
+            option(value="O+", selected=(paciente.grupo_sanguineo === 'O+')) O+
+            option(value="O-", selected=(paciente.grupo_sanguineo === 'O-')) O-
+        div
+          label.block.text-sm.font-medium.text-gray-700 Alergias (Opcional)
+          textarea(name="alergias", rows="2", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")= paciente.alergias || ''
+        div
+          label.block.text-sm.font-medium.text-gray-700 Medicamentos Actuales (Opcional)
+          textarea(name="medicamentos_actuales", rows="2", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")= paciente.medicamentos_actuales || ''
+        div
+          label.block.text-sm.font-medium.text-gray-700 Obra Social (Opcional)
+          select(name="id_obra_social" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+            option(value="", selected=(!paciente.id_obra_social)) Seleccionar Obra Social
+            each os in obrasSociales
+              option(value=os.id_obra_social, selected=(os.id_obra_social === paciente.id_obra_social))= os.nombre
+        div
+          label.block.text-sm.font-medium.text-gray-700 Número de Afiliado (Opcional)
+          input(type="text", name="numero_afiliado", value=paciente.numero_afiliado || '' class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+      
+      div.flex.items-center.space-x-2.mt-6
+        input(type="checkbox", name="activo", id="activo", checked=paciente.activo class="form-checkbox h-5 w-5 text-blue-600 rounded-md focus:ring-blue-500")
+        label(for="activo" class="text-sm font-medium text-gray-700") Activo
+      
+      .flex.justify-end.space-x-4.mt-6
+        a(href="/pacientes").bg-gray-600.hover:bg-gray-700.transition-colors.duration-300.text-white.font-semibold.py-2.px-4.rounded-md.shadow-md Cancelar
+        button(type="submit").bg-blue-600.hover:bg-blue-700.transition-colors.duration-300.text-white.font-semibold.py-2.px-6.rounded-md.shadow-md Actualizar Paciente

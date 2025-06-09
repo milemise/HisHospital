@@ -1,0 +1,32 @@
+extends ../layout
+
+block content
+  .max-w-7xl.mx-auto.bg-white.p-8.rounded-2xl.shadow-xl
+    .flex.justify-between.items-center.mb-6
+      h1.text-3xl.font-bold.text-blue-900 Historial de Altas
+
+    if altas.length === 0
+      p.text-gray-600.mt-4 No hay altas registradas en el sistema.
+    else
+      .overflow-x-auto.mt-6
+        table.min-w-full.bg-white.border.border-gray-200.rounded-lg.shadow-sm
+          thead.bg-blue-100.text-gray-700.uppercase.text-sm
+            tr
+              th.py-3.px-4.text-left.font-semibold ID Alta
+              th.py-3.px-4.text-left.font-semibold Paciente
+              th.py-3.px-4.text-left.font-semibold DNI Paciente
+              th.py-3.px-4.text-left.font-semibold Fecha Alta
+              th.py-3.px-4.text-left.font-semibold Médico
+              th.py-3.px-4.text-left.font-semibold Diagnóstico
+              th.py-3.px-4.text-center.font-semibold Acciones
+          tbody.divide-y.divide-gray-200
+            each alta in altas
+              tr.hover:bg-gray-50.transition-colors.duration-100
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-800 #{alta.id_alta}
+                td.py-3.px-4.whitespace-nowrap.text-sm.font-medium.text-gray-900 #{alta.admision.paciente ? alta.admision.paciente.nombre + ' ' + alta.admision.paciente.apellido : 'N/A'}
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{alta.admision.paciente ? alta.admision.paciente.dni : 'N/A'}
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{alta.fecha_alta_real ? new Date(alta.fecha_alta_real).toLocaleDateString('es-ES') : 'N/A'}
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{alta.medico ? alta.medico.nombre + ' ' + alta.medico.apellido : 'N/A'}
+                td.py-3.px-4.text-sm.text-gray-700 #{alta.diagnostico_final.substring(0, 50)}...
+                td.py-3.px-4.whitespace-nowrap.text-sm.flex.space-x-2.justify-center
+                  a(href="/admisiones/detalles/" + alta.id_admision).text-blue-600.hover:text-blue-800.font-medium.transition-colors Ver Admisión

@@ -1,0 +1,61 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Sistema HIS
+    link(href="/css/style.css", rel="stylesheet")
+    link(href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap", rel="stylesheet")
+    
+  body.bg-gray-100.font-inter.min-h-screen.flex.flex-col // Usando la fuente 'Inter'
+
+    // Header 
+    header.bg-gradient-to-r.from-blue-800.to-blue-900.text-white.p-4.shadow-lg
+      .container.mx-auto.flex.justify-between.items-center
+        a(href="/").text-2xl.font-bold.tracking-tight.hover:text-blue-200.transition-colors.duration-200 Sistema HIS
+        nav
+          ul.flex.space-x-6.items-center
+            li: a(href="/pacientes").hover:text-blue-200.transition-colors.duration-200 Pacientes
+            li: a(href="/admisiones").hover:text-blue-200.transition-colors.duration-200 Admisiones
+            li: a(href="/medicos").hover:text-blue-200.transition-colors.duration-200 Médicos
+            li: a(href="/turnos").hover:text-blue-200.transition-colors.duration-200 Turnos
+            li: a(href="/evaluaciones").hover:text-blue-200.transition-colors.duration-200 Evaluaciones
+            li: a(href="/altas").hover:text-blue-200.transition-colors.duration-200 Altas
+            
+            // Menú de administración 
+            if isAuthenticated && user && user.rol === 'admin'
+              li.relative.group
+                button.hover:text-blue-200.transition-colors.duration-200.focus:outline-none.py-2 Admin
+                .absolute.hidden.group-hover:block.bg-blue-800.text-white.py-2.rounded-md.shadow-xl.z-10.min-w-max.left-1/2.transform.-translate-x-1/2.top-full.mt-2
+                  a(href="/alas").block.px-4.py-2.hover:bg-blue-700.transition-colors.duration-200 Gestión de Alas
+                  a(href="/habitaciones").block.px-4.py-2.hover:bg-blue-700.transition-colors.duration-200 Gestión de Habitaciones
+                  a(href="/camas").block.px-4.py-2.hover:bg-blue-700.transition-colors.duration-200 Gestión de Camas
+                  a(href="/usuarios").block.px-4.py-2.hover:bg-blue-700.transition-colors.duration-200 Gestión de Usuarios
+            
+            // Opciones de autenticación
+            if isAuthenticated && user
+              li.flex.items-center.ml-4
+                span.text-sm.mr-3.font-medium.capitalize.opacity-90 Hola, #{user.nombre_usuario || user.nombre || user.email.split('@')[0]}
+                a(href="/auth/logout").bg-red-600.hover:bg-red-700.transition-colors.duration-200.text-white.py-1.px-3.rounded-md.text-sm.font-semibold.shadow-md Cerrar Sesión
+            else
+              li: a(href="/auth/login").bg-green-600.hover:bg-green-700.transition-colors.duration-200.text-white.py-1.px-3.rounded-md.text-sm.font-semibold.shadow-md Iniciar Sesión
+
+    main.flex-grow.p-6
+      .container.mx-auto
+        // Mensajes Flash (Error y Éxito)
+        if error && error.length > 0
+          .bg-red-100.border.border-red-400.text-red-700.px-4.py-3.rounded-lg.relative.mb-6.shadow-md(role='alert')
+            strong.font-bold !Error:
+            span.block.sm:inline &nbsp;#{error}
+        if success && success.length > 0
+          .bg-green-100.border.border-green-400.text-green-700.px-4.py-3.rounded-lg.relative.mb-6.shadow-md(role='alert')
+            strong.font-bold ¡Éxito!
+            span.block.sm:inline &nbsp;#{success}
+
+        block content
+
+    footer.bg-gray-800.text-white.p-4.text-center.mt-auto.text-sm.shadow-inner
+      .container.mx-auto
+        p &copy; 2025 Sistema HIS - Programación Web II | Desarrollado con ❤️ por Mile
+
+    block scripts

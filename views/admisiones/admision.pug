@@ -1,0 +1,32 @@
+extends ../layout
+
+block content
+  .max-w-3xl.mx-auto.bg-white.mt-10.p-8.rounded-2xl.shadow-lg
+    h1.text-3xl.font-bold.text-blue-900.mb-6 Detalle de Admisión
+
+    dl.divider-y.divide-gray-200.space-y-4
+      div
+        dt.text-sm.font-medium.text-gray-500 Paciente
+        dd.text-lg.font-semibold.text-gray-800 #{admisión.paciente_nombre}
+
+      div
+        dt.text-sm.font-medium.text-gray-500 Fecha de Ingreso
+        dd.text-gray-700 #{admisión.fecha_ingreso}
+
+      div
+        dt.text-sm.font-medium.text-gray-500 Cama Asignada
+        dd.text-gray-700 Cama #{admisión.cama_numero} - Habitación #{admisión.habitacion_nombre} - Ala #{admisión.ala_nombre}
+
+      div
+        dt.text-sm.font-medium.text-gray-500 Motivo de Internación
+        dd.text-gray-700 #{admisión.motivo}
+
+      div
+        dt.text-sm.font-medium.text-gray-500 Estado
+        dd.text-gray-700 #{admisión.estado}
+
+    .mt-6.flex.justify-end.gap-4
+      a(href="/admisiones", class="text-sm text-gray-500 hover:underline") Volver
+      if admisión.estado != 'alta'
+        form(method="POST" action=`/admisiones/${admisión.id}/alta`)
+          button(type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md shadow") Dar el Alta
