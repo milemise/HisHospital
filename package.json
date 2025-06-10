@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "jest",
+    "watch-css": "tailwindcss -i ./public/css/tailwind.css -o ./public/css/style.css --watch",
     "tailwind:build": "tailwindcss -i ./public/css/tailwind.css -o ./public/css/style.css --minify",
     "tailwind:watch": "tailwindcss -i ./public/css/tailwind.css -o ./public/css/style.css --watch"
   },
