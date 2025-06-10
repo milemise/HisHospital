@@ -2,8 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
-
-
 const path = require('path');
 const flash = require('connect-flash');
 const helmet = require('helmet');
@@ -13,10 +11,10 @@ const { sequelize } = require('./models');
 
 const app = express();
 
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(helmet());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -30,12 +28,10 @@ app.use('/api/', rateLimit({
     try {
         await sequelize.authenticate();
         console.log('🟢 Conexión a la DB establecida correctamente.');
-
         await sequelize.sync({ alter: true });
         console.log('🟢 Modelos de la DB sincronizados.');
     } catch (error) {
         console.error('🔴 Error de conexión o sincronización a la DB:', error);
-
         process.exit(1);
     }
 })();
@@ -65,7 +61,6 @@ app.use(passport.session());
 app.use(flash());
 
 app.use((req, res, next) => {
-
     res.locals.user = req.user || null;
     res.locals.isAuthenticated = req.isAuthenticated ? req.isAuthenticated() : false;
     res.locals.success = req.flash('success');
@@ -101,7 +96,8 @@ const routes = [
     { path: '/altas', file: './routes/altas' },
     { path: '/evaluaciones', file: './routes/evaluaciones' },
     { path: '/turnos', file: './routes/turnos' },
-    { path: '/usuarios', file: './routes/usuarios' }];
+    { path: '/usuarios', file: './routes/usuarios' }
+];
 
 try {
     routes.forEach(route => {
@@ -121,9 +117,7 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
     res.locals.message = err.message;
-
     res.locals.error = req.app.get('env') === 'development' ? err : {};
-
     res.status(err.status || 500);
     res.render('error', { title: 'Error', status: err.status || 500, message: err.message });
 });

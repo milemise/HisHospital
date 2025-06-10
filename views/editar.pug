@@ -1,19 +1,22 @@
-extends layout
+extends ../layout
 
 block content
   .max-w-2xl.mx-auto.bg-white.mt-10.p-8.rounded-2xl.shadow-lg
     h1.text-3xl.font-bold.text-blue-900.mb-6 Editar Registro
 
-    form(action="/editar" method="POST" class="space-y-5")
-      .grid.grid-cols-1.md:grid-cols-2.gap-4
-        label.text-sm.font-medium.text-gray-700(for="nombre") Nombre
-        input#nombre(type="text" name="nombre" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500")
+    form(action="/editar", method="POST", class="space-y-6")
+      
+      div
+        label(for="nombre", class="block text-sm font-medium text-gray-700 mb-1") Nombre
+        input(type="text", name="nombre", id="nombre", value=registro.nombre || '', required, class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500")
 
-        label.text-sm.font-medium.text-gray-700(for="telefono") Teléfono
-        input#telefono(type="text" name="telefono" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500")
+      div
+        label(for="telefono", class="block text-sm font-medium text-gray-700 mb-1") Teléfono
+        input(type="text", name="telefono", id="telefono", value=registro.telefono || '', required, class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500")
 
-        label.text-sm.font-medium.text-gray-700(for="direccion") Dirección
-        input#direccion(type="text" name="direccion" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500")
+      div
+        label(for="direccion", class="block text-sm font-medium text-gray-700 mb-1") Dirección
+        input(type="text", name="direccion", id="direccion", value=registro.direccion || '', class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500")
 
-      .text-right.mt-6
-        button(type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md shadow") Guardar Cambios
+      .text-right.pt-4
+        button(type="submit", class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md shadow-md transition-colors duration-300") Guardar Cambios
