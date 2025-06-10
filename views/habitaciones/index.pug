@@ -4,7 +4,7 @@ block content
   .max-w-7xl.mx-auto.bg-white.p-8.rounded-2xl.shadow-xl
     .flex.justify-between.items-center.mb-6
       h1.text-3xl.font-bold.text-blue-900 Gestión de Habitaciones
-      a(href="/habitaciones/nuevo").bg-blue-600.hover:bg-blue-700.transition-colors.duration-300.text-white.font-semibold.py-2.px-4.rounded-md.shadow-md Nueva Habitación
+      a(href="/habitaciones/nuevo", class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md") Nueva Habitación
 
     if habitaciones.length === 0
       p.text-gray-600.mt-4 No hay habitaciones registradas en el sistema.
@@ -22,15 +22,15 @@ block content
               th.py-3.px-4.text-center.font-semibold Acciones
           tbody.divide-y.divide-gray-200
             each habitacion in habitaciones
-              tr.hover:bg-gray-50.transition-colors.duration-100
+              tr(class="hover:bg-gray-50 transition-colors duration-100")
                 td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-800 #{habitacion.id_habitacion}
                 td.py-3.px-4.whitespace-nowrap.text-sm.font-medium.text-gray-900 #{habitacion.numero}
                 td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{habitacion.tipo}
                 td.py-3.px-4.whitespace-nowrap.text-sm.font-semibold
-                  span.px-2.inline-flex.text-xs.leading-5.font-semibold.rounded-full(class=(habitacion.estado === 'Disponible' ? 'bg-green-100 text-green-800' : habitacion.estado === 'Ocupada' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800')) #{habitacion.estado}
+                  span(class=['px-2', 'inline-flex', 'text-xs', 'leading-5', 'font-semibold', 'rounded-full', habitacion.estado === 'Disponible' ? 'bg-green-100 text-green-800' : habitacion.estado === 'Ocupada' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800']) #{habitacion.estado}
                 td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{habitacion.ala ? habitacion.ala.nombre : 'N/A'}
                 td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{habitacion.camas ? habitacion.camas.length : 0}
                 td.py-3.px-4.whitespace-nowrap.text-sm.flex.space-x-2.justify-center
-                  a(href="/habitaciones/editar/" + habitacion.id_habitacion).text-indigo-600.hover:text-indigo-800.font-medium.transition-colors Editar
-                  form(action="/habitaciones/eliminar/" + habitacion.id_habitacion, method="POST", onsubmit="return confirm('¿Está seguro de eliminar esta habitación? Esto eliminará todas sus camas si no tienen admisiones activas.');", style="display:inline-block;")
-                    button(type="submit").text-red-600.hover:text-red-800.font-medium.transition-colors Eliminar
+                  a(href=`/habitaciones/editar/${habitacion.id_habitacion}`, class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors") Editar
+                  form(action=`/habitaciones/eliminar/${habitacion.id_habitacion}`, method="POST", onsubmit="return confirm('¿Está seguro de eliminar esta habitación? Esto eliminará todas sus camas si no tienen admisiones activas.');", style="display:inline-block;")
+                    button(type="submit", class="text-red-600 hover:text-red-800 font-medium transition-colors") Eliminar

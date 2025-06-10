@@ -16,11 +16,11 @@ block content
 
       tbody
         each paciente in pacientes
-          tr.border-b.border-gray-100.hover:bg-blue-50
-            td.p-3 #{paciente.nombre}
-            td.p-3 #{paciente.telefono}
-            td.p-3 #{paciente.direccion}
-            td.p-3 #{paciente.sexo}
-            td.p-3 #{paciente.obra_social}
+          tr(class="border-b border-gray-100 hover:bg-blue-50")
+            td.p-3 #{paciente.nombre} #{paciente.apellido}
+            td.p-3 #{paciente.telefono || 'N/A'}
+            td.p-3 #{paciente.direccion || 'N/A'}
+            td.p-3 #{paciente.genero || 'N/A'}
+            td.p-3 #{paciente.obraSocial ? paciente.obraSocial.nombre : 'Sin Obra Social'}
             td.p-3
-              a(href=`/pacientes/${paciente.id}/editar` class="text-blue-600 hover:underline text-sm") Editar
+              a(href=`/pacientes/editar/${paciente.id_paciente}`, class="text-blue-600 hover:underline text-sm") Editar

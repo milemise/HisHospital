@@ -4,29 +4,29 @@ block content
   .max-w-md.mx-auto.bg-white.mt-10.p-8.rounded-2xl.shadow-xl
     h1.text-3xl.font-bold.text-blue-900.mb-6 Registrar Nuevo Médico
 
-    form(action="/medicos", method="POST" class="space-y-6")
+    form(action="/medicos", method="POST", class="space-y-6")
       div
-        label.block.text-sm.font-medium.text-gray-700 Nombre
-        input(type="text", name="nombre", placeholder="Nombre del médico" required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+        label(for="nombre", class="block text-sm font-medium text-gray-700") Nombre
+        input(type="text", name="nombre", id="nombre", placeholder="Nombre del médico", required, class="w-full mt-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
       div
-        label.block.text-sm.font-medium.text-gray-700 Apellido
-        input(type="text", name="apellido", placeholder="Apellido del médico" required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+        label(for="apellido", class="block text-sm font-medium text-gray-700") Apellido
+        input(type="text", name="apellido", id="apellido", placeholder="Apellido del médico", required, class="w-full mt-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
       div
-        label.block.text-sm.font-medium.text-gray-700 Especialidad
-        select(name="id_especialidad" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+        label(for="id_especialidad", class="block text-sm font-medium text-gray-700") Especialidad
+        select(name="id_especialidad", id="id_especialidad", required, class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
           option(value="") Seleccionar Especialidad
           each esp in especialidades
             option(value=esp.id_especialidad)= esp.nombre
       div
-        label.block.text-sm.font-medium.text-gray-700 Matrícula
-        input(type="text", name="matricula", placeholder="Matrícula profesional" required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+        label(for="matricula", class="block text-sm font-medium text-gray-700") Matrícula
+        input(type="text", name="matricula", id="matricula", placeholder="Matrícula profesional", required, class="w-full mt-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
       div
-        label.block.text-sm.font-medium.text-gray-700 Teléfono (Opcional)
-        input(type="text", name="telefono", placeholder="Número de teléfono" class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+        label(for="telefono", class="block text-sm font-medium text-gray-700") Teléfono (Opcional)
+        input(type="text", name="telefono", id="telefono", placeholder="Número de teléfono", class="w-full mt-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
       div
-        label.block.text-sm.font-medium.text-gray-700 Email
-        input(type="email", name="email", placeholder="Correo electrónico" required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+        label(for="email", class="block text-sm font-medium text-gray-700") Email
+        input(type="email", name="email", id="email", placeholder="Correo electrónico", required, class="w-full mt-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
       
-      .flex.justify-end.space-x-4.mt-6
-        a(href="/medicos").bg-gray-600.hover:bg-gray-700.transition-colors.duration-300.text-white.font-semibold.py-2.px-4.rounded-md.shadow-md Cancelar
-        button(type="submit").bg-blue-600.hover:bg-blue-700.transition-colors.duration-300.text-white.font-semibold.py-2.px-6.rounded-md.shadow-md Guardar Médico
+      .flex.justify-end.space-x-4.pt-4
+        a(href="/medicos", class="bg-gray-600 hover:bg-gray-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md") Cancelar
+        button(type="submit", class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-2 px-6 rounded-md shadow-md") Guardar Médico

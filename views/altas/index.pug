@@ -21,12 +21,12 @@ block content
               th.py-3.px-4.text-center.font-semibold Acciones
           tbody.divide-y.divide-gray-200
             each alta in altas
-              tr.hover:bg-gray-50.transition-colors.duration-100
+              tr(class="hover:bg-gray-50 transition-colors duration-100")
                 td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-800 #{alta.id_alta}
-                td.py-3.px-4.whitespace-nowrap.text-sm.font-medium.text-gray-900 #{alta.admision.paciente ? alta.admision.paciente.nombre + ' ' + alta.admision.paciente.apellido : 'N/A'}
-                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{alta.admision.paciente ? alta.admision.paciente.dni : 'N/A'}
+                td.py-3.px-4.whitespace-nowrap.text-sm.font-medium.text-gray-900 #{alta.admision && alta.admision.paciente ? alta.admision.paciente.nombre + ' ' + alta.admision.paciente.apellido : 'N/A'}
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{alta.admision && alta.admision.paciente ? alta.admision.paciente.dni : 'N/A'}
                 td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{alta.fecha_alta_real ? new Date(alta.fecha_alta_real).toLocaleDateString('es-ES') : 'N/A'}
                 td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{alta.medico ? alta.medico.nombre + ' ' + alta.medico.apellido : 'N/A'}
-                td.py-3.px-4.text-sm.text-gray-700 #{alta.diagnostico_final.substring(0, 50)}...
+                td.py-3.px-4.text-sm.text-gray-700 #{alta.diagnostico_final ? alta.diagnostico_final.substring(0, 50) + '...' : 'N/A'}
                 td.py-3.px-4.whitespace-nowrap.text-sm.flex.space-x-2.justify-center
-                  a(href="/admisiones/detalles/" + alta.id_admision).text-blue-600.hover:text-blue-800.font-medium.transition-colors Ver Admisión
+                  a(href=`/admisiones/detalles/${alta.id_admision}`, class="text-blue-600 hover:text-blue-800 font-medium transition-colors") Ver Admisión

@@ -4,11 +4,11 @@ block content
   .max-w-md.mx-auto.bg-white.mt-10.p-8.rounded-2xl.shadow-xl
     h1.text-3xl.font-bold.text-blue-900.mb-6 Editar Ala: #{ala.nombre}
 
-    form(action="/alas/actualizar/" + ala.id_ala, method="POST" class="space-y-6")
+    form(action=`/alas/actualizar/${ala.id_ala}`, method="POST", class="space-y-6")
       div
-        label.block.text-sm.font-medium.text-gray-700 Nombre del Ala
-        input(type="text", name="nombre", value=ala.nombre required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+        label(for="nombre", class="block text-sm font-medium text-gray-700") Nombre del Ala
+        input(type="text", name="nombre", id="nombre", value=ala.nombre, required, class="w-full mt-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
       
-      .flex.justify-end.space-x-4.mt-6
-        a(href="/alas").bg-gray-600.hover:bg-gray-700.transition-colors.duration-300.text-white.font-semibold.py-2.px-4.rounded-md.shadow-md Cancelar
-        button(type="submit").bg-blue-600.hover:bg-blue-700.transition-colors.duration-300.text-white.font-semibold.py-2.px-6.rounded-md.shadow-md Actualizar Ala
+      .flex.justify-end.space-x-4.pt-4
+        a(href="/alas", class="bg-gray-600 hover:bg-gray-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md") Cancelar
+        button(type="submit", class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-2 px-6 rounded-md shadow-md") Actualizar Ala

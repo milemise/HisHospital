@@ -10,10 +10,10 @@ block content
       p.mb-4 Mensaje: 
         span.text-red-600 #{message || 'Algo salió mal en el servidor.'}
     
-    if error.stack && (process.env.NODE_ENV === 'development' || req.app.get('env') === 'development')
+    if error && error.stack && process.env.NODE_ENV === 'development'
       .bg-gray-100.p-4.rounded-lg.text-sm.text-left.font-mono.whitespace-pre-wrap.break-words.max-h-60.overflow-auto.mb-6
         strong Stack Trace:
         pre.mt-2 #{error.stack}
 
     .mt-8
-      a(href="/").bg-blue-600.hover:bg-blue-700.transition-colors.duration-300.text-white.font-semibold.py-3.px-6.rounded-lg.shadow-md Volver al Inicio
+      a(href="/", class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-3 px-6 rounded-lg shadow-md") Volver al Inicio
