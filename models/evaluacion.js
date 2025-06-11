@@ -12,11 +12,11 @@ const Evaluacion = sequelize.define('Evaluacion', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'admisiones', 
+      model: 'admisiones',
       key: 'id_admision'
     }
   },
-  id_paciente: { 
+  id_paciente: {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
@@ -39,7 +39,7 @@ const Evaluacion = sequelize.define('Evaluacion', {
   },
   diagnostico: {
     type: DataTypes.TEXT,
-    allowNull: true 
+    allowNull: true
   },
   observaciones_medicas: {
     type: DataTypes.TEXT,
@@ -55,9 +55,15 @@ const Evaluacion = sequelize.define('Evaluacion', {
   }
 }, {
   tableName: 'evaluaciones',
-  timestamps: true, 
-  createdAt: 'createdAt', 
+  timestamps: true,
+  createdAt: 'createdAt',
   updatedAt: 'updated_at'
 });
+
+Evaluacion.associate = (models) => {
+  Evaluacion.belongsTo(models.Admision, { foreignKey: 'id_admision', as: 'admision' });
+  Evaluacion.belongsTo(models.Paciente, { foreignKey: 'id_paciente', as: 'paciente' });
+  Evaluacion.belongsTo(models.Medico, { foreignKey: 'id_medico', as: 'medico' });
+};
 
 module.exports = Evaluacion;

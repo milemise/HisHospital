@@ -1,0 +1,25 @@
+extends ../layout
+
+block content
+  .row.justify-content-center.mt-5
+    .col-md-6.col-lg-5
+      .card.shadow-sm
+        .card-body.p-4
+          h2.card-title.text-center.mb-4 Regístrate en Sistema HIS
+          p.text-center.text-muted.mb-4 Crea tu nueva cuenta.
+          form(action="/auth/register", method="POST")
+            .mb-3
+              label.form-label(for="nombre_usuario") Nombre de Usuario
+              input.form-control#nombre_usuario(type="text", name="nombre_usuario", placeholder="Tu nombre", required)
+            .mb-3
+              label.form-label(for="email") Correo Electrónico
+              input.form-control#email(type="email", name="email", placeholder="tu@correo.com", required)
+            .mb-3
+              label.form-label(for="password") Contraseña
+              input.form-control#password(type="password", name="password", placeholder="Crea una contraseña", required)
+            .d-grid
+              button.btn.btn-primary(type="submit") Registrarme
+
+          .text-center.mt-3
+            p ¿Ya tienes cuenta? 
+              a(href="/auth/login") Inicia sesión aquí

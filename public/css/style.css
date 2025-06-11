@@ -1,0 +1,6 @@
+body { font-family: sans-serif; margin: 0; padding: 0; background: #f0f4f7; }
+nav ul { list-style: none; background: #005f73; padding: 1em; display: flex; gap: 1em; }
+nav ul li a { color: white; text-decoration: none; }
+h1 { color: #0a9396; margin-left: 1em; }
+form { display: flex; flex-direction: column; max-width: 300px; margin-left: 1em; gap: 0.5em; }
+input, select, button { padding: 0.5em; }

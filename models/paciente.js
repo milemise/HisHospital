@@ -19,10 +19,10 @@ const Paciente = sequelize.define('Paciente', {
   dni: {
     type: DataTypes.STRING(20),
     allowNull: false,
-    unique: true 
+    unique: true
   },
   fecha_nacimiento: {
-    type: DataTypes.DATEONLY, 
+    type: DataTypes.DATEONLY,
     allowNull: false
   },
   genero: {
@@ -49,7 +49,7 @@ const Paciente = sequelize.define('Paciente', {
     type: DataTypes.TEXT,
     allowNull: true
   },
-  medicamentos_actuales: { 
+  medicamentos_actuales: {
     type: DataTypes.TEXT,
     allowNull: true
   },
@@ -57,7 +57,7 @@ const Paciente = sequelize.define('Paciente', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'obras_sociales', 
+      model: 'obras_sociales',
       key: 'id_obra_social'
     }
   },
@@ -71,11 +71,18 @@ const Paciente = sequelize.define('Paciente', {
   }
 }, {
   tableName: 'pacientes',
-  timestamps: true, 
+  timestamps: true,
   createdAt: 'created_at',
   updatedAt: 'updated_at',
   paranoid: true,
-  deletedAt: 'deleted_at' 
+  deletedAt: 'deleted_at'
 });
+
+Paciente.associate = (models) => {
+  Paciente.belongsTo(models.ObraSocial, { foreignKey: 'id_obra_social', as: 'obraSocial' });
+  Paciente.hasMany(models.Admision, { foreignKey: 'id_paciente', as: 'admisiones' });
+  Paciente.hasMany(models.Evaluacion, { foreignKey: 'id_paciente', as: 'evaluaciones' });
+  Paciente.hasMany(models.Turno, { foreignKey: 'id_paciente', as: 'turnos' });
+};
 
 module.exports = Paciente;

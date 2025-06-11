@@ -1,6 +1,5 @@
 require('dotenv').config();
 const { Sequelize } = require('sequelize');
-require('dotenv').config(); 
 
 const sequelize = new Sequelize(
   process.env.DB_NAME || 'his_internacion',
@@ -8,11 +7,13 @@ const sequelize = new Sequelize(
   process.env.DB_PASSWORD || '',
   {
     host: process.env.DB_HOST || 'localhost',
-    dialect: 'mysql', 
-    logging: false, 
+    dialect: 'mysql',
+    logging: false,
     define: {
-      freezeTableName: true, 
-      underscored: true 
+      freezeTableName: true,
+      underscored: true,
+      timestamps: true,
+      id: false  // <-- Esto desactiva la creación automática de la columna 'id'
     },
     pool: {
       max: 5,

@@ -1,4 +1,3 @@
-const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('./sequelize');
 
 const Ala = require('./ala');
@@ -8,13 +7,14 @@ const ObraSocial = require('./obraSocial');
 const Paciente = require('./paciente');
 const Admision = require('./admision');
 const AsignacionCama = require('./asignacionCama');
-const Especialidad = require('./especialidad'); 
+const Especialidad = require('./especialidad');
 const Medico = require('./medico');
 const Evaluacion = require('./evaluacion');
-const Alta = require('./alta'); 
+const Alta = require('./alta');
 const Turno = require('./turno');
 const Usuario = require('./usuario');
 
+// Asociaciones
 Ala.hasMany(Habitacion, { foreignKey: 'id_ala', as: 'habitaciones' });
 Habitacion.belongsTo(Ala, { foreignKey: 'id_ala', as: 'ala' });
 
@@ -30,7 +30,7 @@ Admision.belongsTo(Paciente, { foreignKey: 'id_paciente', as: 'paciente' });
 Admision.hasMany(AsignacionCama, { foreignKey: 'id_admision', as: 'asignacionesCama' });
 AsignacionCama.belongsTo(Admision, { foreignKey: 'id_admision', as: 'admision' });
 
-Cama.hasMany(AsignacionCama, { foreignKey: 'id_cama', as: 'asignaciones' }); 
+Cama.hasMany(AsignacionCama, { foreignKey: 'id_cama', as: 'asignaciones' });
 AsignacionCama.belongsTo(Cama, { foreignKey: 'id_cama', as: 'cama' });
 
 Especialidad.hasMany(Medico, { foreignKey: 'id_especialidad', as: 'medicos' });

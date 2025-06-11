@@ -12,12 +12,12 @@ const Cama = sequelize.define('Cama', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'habitaciones', 
+      model: 'habitaciones',
       key: 'id_habitacion'
     }
   },
   numero: {
-    type: DataTypes.STRING(10), 
+    type: DataTypes.STRING(10),
     allowNull: false
   },
   estado: {
@@ -27,12 +27,16 @@ const Cama = sequelize.define('Cama', {
   },
   genero_asignado: {
     type: DataTypes.ENUM('M', 'F'),
-    allowNull: true 
+    allowNull: true
   }
 }, {
-  tableName: 'cama', 
-  timestamps: false 
+  tableName: 'cama',
+  timestamps: false
 });
 
+Cama.associate = (models) => {
+  Cama.belongsTo(models.Habitacion, { foreignKey: 'id_habitacion', as: 'habitacion' });
+  Cama.hasMany(models.AsignacionCama, { foreignKey: 'id_cama', as: 'asignaciones' });
+};
 
 module.exports = Cama;

@@ -1,111 +1,114 @@
 extends ../layout
 
 block content
-  .max-w-4xl.mx-auto.bg-white.mt-10.p-8.rounded-2xl.shadow-xl
-    h1.text-3xl.font-bold.text-blue-900.mb-6 Registrar Nueva Admisión
+  .row.justify-content-center
+    .col-lg-10.col-xl-9
+      .card.shadow-sm.my-4
+        .card-header
+          h1.h4.mb-0 Registrar Nueva Admisión
+        .card-body.p-4
+          form(action="/admisiones", method="POST")
+            .card.mb-4
+              .card-header.fw-bold Datos del Paciente
+              .card-body
+                .row.align-items-end
+                  .col-md-8.mb-3.mb-md-0
+                    label.form-label(for="pacienteSelector") Seleccionar Paciente Existente
+                    select.form-select#pacienteSelector(name="id_paciente_seleccionado", required)
+                      option(value="") -- Seleccionar paciente --
+                      option(value="nuevo") -- Registrar Nuevo Paciente --
+                      each p in pacientes
+                        option(value=p.id_paciente)= p.nombre + ' ' + p.apellido + ' (DNI: ' + p.dni + ')'
+                  .col-md-4.d-flex.align-items-center.justify-content-start.justify-content-md-end.pb-1
+                    .form-check.form-switch
+                      input.form-check-input#es_emergencia(type="checkbox", name="es_emergencia")
+                      label.form-check-label.fw-bold.text-danger(for="es_emergencia") Emergencia
+            
+            #nuevoPacienteFields.card.mb-4(style="display: none;")
+              .card-header.fw-bold Información del Nuevo Paciente
+              .card-body
+                .row.g-3
+                  .col-md-6: .form-floating
+                    input.form-control#nombre_paciente_nuevo(type="text", name="nombre_paciente_nuevo", placeholder="Nombre")
+                    label(for="nombre_paciente_nuevo") Nombre
+                  .col-md-6: .form-floating
+                    input.form-control#apellido_paciente_nuevo(type="text", name="apellido_paciente_nuevo", placeholder="Apellido")
+                    label(for="apellido_paciente_nuevo") Apellido
+                  .col-md-6: .form-floating
+                    input.form-control#dni_paciente_nuevo(type="text", name="dni_paciente_nuevo", placeholder="DNI")
+                    label(for="dni_paciente_nuevo") DNI
+                  .col-md-6
+                    label.form-label(for="fecha_nacimiento_nuevo") Fecha de Nacimiento
+                    input.form-control#fecha_nacimiento_nuevo(type="date", name="fecha_nacimiento_nuevo")
+                  .col-md-6
+                    label.form-label(for="genero_paciente_nuevo") Género
+                    select.form-select#genero_paciente_nuevo(name="genero_paciente_nuevo")
+                      option(value="") Seleccionar Género
+                      option(value="Masculino") Masculino
+                      option(value="Femenino") Femenino
+                      option(value="Otro") Otro
+                      option(value="No especificado") No especificado
+                  .col-md-6: .form-floating
+                    input.form-control#telefono_nuevo(type="text", name="telefono_nuevo", placeholder="Teléfono")
+                    label(for="telefono_nuevo") Teléfono
+                  .col-md-6: .form-floating
+                    input.form-control#email_nuevo(type="email", name="email_nuevo", placeholder="Email")
+                    label(for="email_nuevo") Email
+                  .col-md-6: .form-floating
+                    input.form-control#direccion_nuevo(type="text", name="direccion_nuevo", placeholder="Dirección")
+                    label(for="direccion_nuevo") Dirección
+                  .col-md-6
+                    label.form-label(for="grupo_sanguineo_nuevo") Grupo Sanguíneo
+                    select.form-select#grupo_sanguineo_nuevo(name="grupo_sanguineo_nuevo")
+                      option(value="") Seleccionar
+                      option(value="A+") A+
+                      option(value="A-") A-
+                      option(value="B+") B+
+                      option(value="B-") B-
+                      option(value="AB+") AB+
+                      option(value="AB-") AB-
+                      option(value="O+") O+
+                      option(value="O-") O-
+                  .col-md-6: .form-floating
+                    textarea.form-control#alergias_nuevo(name="alergias_nuevo", placeholder="Alergias", style="height: 100px")
+                    label(for="alergias_nuevo") Alergias
+                  .col-md-6: .form-floating
+                    textarea.form-control#medicamentos_nuevo(name="medicamentos_nuevo", placeholder="Medicamentos Actuales", style="height: 100px")
+                    label(for="medicamentos_nuevo") Medicamentos Actuales
+                  .col-md-6
+                    label.form-label(for="id_obra_social_nuevo") Obra Social
+                    select.form-select#id_obra_social_nuevo(name="id_obra_social_nuevo")
+                      option(value="") Seleccionar Obra Social
+                      each os in obrasSociales
+                        option(value=os.id_obra_social)= os.nombre
+                  .col-md-6: .form-floating
+                    input.form-control#numero_afiliado_nuevo(type="text", name="numero_afiliado_nuevo", placeholder="Número de Afiliado")
+                    label(for="numero_afiliado_nuevo") Número de Afiliado
 
-    form(action="/admisiones", method="POST" class="space-y-6")
+            .card.mb-4
+              .card-header.fw-bold Detalles de la Admisión
+              .card-body
+                .row.g-3
+                  .col-md-6
+                    label.form-label(for="fecha_ingreso") Fecha de Ingreso
+                    input.form-control#fecha_ingreso(type="datetime-local", name="fecha_ingreso", value=new Date().toISOString().slice(0, 16), required)
+                  .col-md-12
+                    label.form-label(for="motivo_internacion") Motivo de Internación
+                    textarea.form-control#motivo_internacion(name="motivo_internacion", placeholder="Describa el motivo de la internación", required, rows="3")
 
-      // Creación de Paciente
-      div.mb-6.p-5.border.border-gray-200.rounded-lg.bg-gray-50
-        h3.text-lg.font-semibold.text-gray-800.mb-3 Datos del Paciente
-        
-        div.flex.items-center.justify-between.mb-4
-          div.flex-grow
-            label.block.text-sm.font-medium.text-gray-700 Seleccionar Paciente Existente
-            select#pacienteSelector(name="id_paciente_seleccionado" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" required)
-              option(value="") -- Seleccionar paciente --
-              option(value="nuevo") -- Registrar Nuevo Paciente --
-              each p in pacientes
-                option(value=p.id_paciente)= p.nombre + ' ' + p.apellido + ' (DNI: ' + p.dni + ')'
-          
-          .ml-6
-            input(type="checkbox", name="es_emergencia", id="es_emergencia", class="form-checkbox h-5 w-5 text-red-600 rounded-md focus:ring-red-500")
-            label(for="es_emergencia" class="ml-2 text-base text-red-700 font-semibold") Admisión de Emergencia
+            .card.mb-4
+              .card-header.fw-bold Asignación de Cama
+              .card-body
+                label.form-label(for="id_cama_asignada") Cama Disponible
+                select.form-select#id_cama_asignada(name="id_cama_asignada", required)
+                  option(value="") -- Seleccione una cama disponible --
+                  each cama in camasDisponibles
+                    option(value=cama.id_cama)= `Hab: ${cama.habitacion.numero} (Ala: ${cama.habitacion.ala.nombre}) - Cama: ${cama.numero} ${cama.genero_asignado ? '(Género: ' + (cama.genero_asignado === 'M' ? 'Masculino' : 'Femenino') + ')' : '(Mixto/Individual)'}`
+            
+            .d-flex.justify-content-end
+              button.btn.btn-primary.btn-lg(type="submit") Guardar Admisión
 
-      div#nuevoPacienteFields.space-y-4.p-5.border.border-gray-200.rounded-lg.bg-gray-50(style="display: none;")
-        h3.text-lg.font-semibold.text-gray-800.mb-3 Información del Nuevo Paciente
-        .grid.grid-cols-1.md:grid-cols-2.gap-4
-          div
-            label.block.text-sm.font-medium.text-gray-700 Nombre
-            input(type="text", name="nombre_paciente_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-          div
-            label.block.text-sm.font-medium.text-gray-700 Apellido
-            input(type="text", name="apellido_paciente_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-          div
-            label.block.text-sm.font-medium.text-gray-700 DNI
-            input(type="text", name="dni_paciente_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-          div
-            label.block.text-sm.font-medium.text-gray-700 Fecha de Nacimiento
-            input(type="date", name="fecha_nacimiento_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-          div
-            label.block.text-sm.font-medium.text-gray-700 Género
-            select(name="genero_paciente_nuevo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-              option(value="") Seleccionar Género
-              option(value="Masculino") Masculino
-              option(value="Femenino") Femenino
-              option(value="Otro") Otro
-              option(value="No especificado") No especificado
-          div
-            label.block.text-sm.font-medium.text-gray-700 Teléfono
-            input(type="text", name="telefono_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-          div
-            label.block.text-sm.font-medium.text-gray-700 Email
-            input(type="email", name="email_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-          div
-            label.block.text-sm.font-medium.text-gray-700 Dirección
-            input(type="text", name="direccion_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-          div
-            label.block.text-sm.font-medium.text-gray-700 Grupo Sanguíneo
-            select(name="grupo_sanguineo_nuevo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-              option(value="") Seleccionar
-              option(value="A+") A+
-              option(value="A-") A-
-              option(value="B+") B+
-              option(value="B-") B-
-              option(value="AB+") AB+
-              option(value="AB-") AB-
-              option(value="O+") O+
-              option(value="O-") O-
-          div
-            label.block.text-sm.font-medium.text-gray-700 Alergias
-            textarea(name="alergias_nuevo", rows="2", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-          div
-            label.block.text-sm.font-medium.text-gray-700 Medicamentos Actuales
-            textarea(name="medicamentos_nuevo", rows="2", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-          div
-            label.block.text-sm.font-medium.text-gray-700 Obra Social
-            select(name="id_obra_social_nuevo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-              option(value="") Seleccionar Obra Social
-              each os in obrasSociales
-                option(value=os.id_obra_social)= os.nombre
-          div
-            label.block.text-sm.font-medium.text-gray-700 Número de Afiliado
-            input(type="text", name="numero_afiliado_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-
-      // Admision 
-      div.space-y-4.p-5.border.border-gray-200.rounded-lg.bg-gray-50
-        h3.text-lg.font-semibold.text-gray-800.mb-3 Detalles de la Admisión
-        div
-          label.block.text-sm.font-medium.text-gray-700 Fecha de Ingreso
-          input(type="datetime-local", name="fecha_ingreso" value=new Date().toISOString().slice(0, 16) required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-
-        div
-          label.block.text-sm.font-medium.text-gray-700 Motivo de Internación
-          textarea(name="motivo_internacion", placeholder="Describa el motivo de la internación" required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" rows="3")
-
-      div.mb-6.p-5.border.border-gray-200.rounded-lg.bg-gray-50
-        h3.text-lg.font-semibold.text-gray-800.mb-3 Asignación de Cama
-        div
-          label.block.text-sm.font-medium.text-gray-700 Cama Disponible
-          select#id_cama_asignada(name="id_cama_asignada" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-            option(value="") -- Seleccione una cama disponible --
-            each cama in camasDisponibles
-              option(value=cama.id_cama)= `Hab: ${cama.habitacion.numero} (Ala: ${cama.habitacion.ala.nombre}) - Cama: ${cama.numero} ${cama.genero_asignado ? '(Género: ' + (cama.genero_asignado === 'M' ? 'Masculino' : 'Femenino') + ')' : '(Mixto/Individual)'}`
-
-      button(type="submit" class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-2 px-6 rounded-md shadow-md") Guardar Admisión
-
-block scripts
+block scripts append
   script.
     const pacienteSelector = document.getElementById('pacienteSelector');
     const nuevoPacienteFields = document.getElementById('nuevoPacienteFields');
@@ -117,29 +120,24 @@ block scripts
       const isNuevoPacienteSelected = pacienteSelector.value === 'nuevo';
       const isEmergenciaChecked = esEmergenciaCheckbox.checked;
 
-      if (isNuevoPacienteSelected || isEmergenciaChecked) {
-        nuevoPacienteFields.style.display = 'block';
-        nuevoPacienteInputs.forEach(input => {
-          if (input.name === 'nombre_paciente_nuevo' || input.name === 'apellido_paciente_nuevo' || input.name === 'genero_paciente_nuevo') {
-            input.required = isNuevoPacienteSelected && !isEmergenciaChecked;
-          } else if (input.name === 'dni_paciente_nuevo') {
-            input.required = isNuevoPacienteSelected && !isEmergenciaChecked;
-          } else {
-            input.required = false; 
+      const shouldShow = isNuevoPacienteSelected || isEmergenciaChecked;
+      
+      nuevoPacienteFields.style.display = shouldShow ? 'block' : 'none';
+
+      nuevoPacienteInputs.forEach(input => {
+        let isRequired = false;
+        if (shouldShow) {
+          const requiredForNew = ['nombre_paciente_nuevo', 'apellido_paciente_nuevo', 'dni_paciente_nuevo', 'genero_paciente_nuevo'];
+          if (requiredForNew.includes(input.name)) {
+            isRequired = isNuevoPacienteSelected || isEmergenciaChecked;
           }
-        });
-        pacienteSelector.removeAttribute('required'); 
-      } else {
-        nuevoPacienteFields.style.display = 'none';
-        nuevoPacienteInputs.forEach(input => {
-          input.required = false;
-          input.value = '';
-        });
-        pacienteSelector.setAttribute('required', 'true'); 
-      }
+        }
+        input.required = isRequired;
+      });
+      
+      pacienteSelector.required = !shouldShow;
     }
 
     pacienteSelector.addEventListener('change', toggleNuevoPacienteFields);
     esEmergenciaCheckbox.addEventListener('change', toggleNuevoPacienteFields);
-
     document.addEventListener('DOMContentLoaded', toggleNuevoPacienteFields);

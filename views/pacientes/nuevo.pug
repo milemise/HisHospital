@@ -1,68 +1,70 @@
 extends ../layout
 
 block content
-  .max-w-2xl.mx-auto.bg-white.mt-10.p-8.rounded-2xl.shadow-xl
-    h1.text-3xl.font-bold.text-blue-900.mb-6 Registrar Nuevo Paciente
-
-    form(action="/pacientes", method="POST" class="space-y-6")
-      .grid.grid-cols-1.md:grid-cols-2.gap-4
-        div
-          label.block.text-sm.font-medium.text-gray-700 Nombre
-          input(type="text", name="nombre", placeholder="Nombre del paciente" required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-        div
-          label.block.text-sm.font-medium.text-gray-700 Apellido
-          input(type="text", name="apellido", placeholder="Apellido del paciente" required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-        div
-          label.block.text-sm.font-medium.text-gray-700 DNI
-          input(type="text", name="dni", placeholder="Número de DNI" required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-        div
-          label.block.text-sm.font-medium.text-gray-700 Fecha de Nacimiento
-          input(type="date", name="fecha_nacimiento" required class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-        div
-          label.block.text-sm.font-medium.text-gray-700 Género
-          select(name="genero" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-            option(value="") Seleccionar Género
-            option(value="Masculino") Masculino
-            option(value="Femenino") Femenino
-            option(value="Otro") Otro
-            option(value="No especificado") No especificado
-        div
-          label.block.text-sm.font-medium.text-gray-700 Teléfono (Opcional)
-          input(type="text", name="telefono", placeholder="Número de teléfono" class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-        div
-          label.block.text-sm.font-medium.text-gray-700 Email (Opcional)
-          input(type="email", name="email", placeholder="Correo electrónico" class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-        div
-          label.block.text-sm.font-medium.text-gray-700 Dirección (Opcional)
-          input(type="text", name="direccion", placeholder="Dirección del paciente" class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-        div
-          label.block.text-sm.font-medium.text-gray-700 Grupo Sanguíneo (Opcional)
-          select(name="grupo_sanguineo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-            option(value="") Seleccionar
-            option(value="A+") A+
-            option(value="A-") A-
-            option(value="B+") B+
-            option(value="B-") B-
-            option(value="AB+") AB+
-            option(value="AB-") AB-
-            option(value="O+") O+
-            option(value="O-") O-
-        div
-          label.block.text-sm.font-medium.text-gray-700 Alergias (Opcional)
-          textarea(name="alergias", rows="2", placeholder="Alergias conocidas" class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-        div
-          label.block.text-sm.font-medium.text-gray-700 Medicamentos Actuales (Opcional)
-          textarea(name="medicamentos_actuales", rows="2", placeholder="Medicamentos que toma actualmente" class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-        div
-          label.block.text-sm.font-medium.text-gray-700 Obra Social (Opcional)
-          select(name="id_obra_social" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-            option(value="") Seleccionar Obra Social
-            each os in obrasSociales
-              option(value=os.id_obra_social)= os.nombre
-        div
-          label.block.text-sm.font-medium.text-gray-700 Número de Afiliado (Opcional)
-          input(type="text", name="numero_afiliado", placeholder="Número de afiliado de la obra social" class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-
-      .flex.justify-end.space-x-4.mt-6
-        a(href="/pacientes").bg-gray-600.hover:bg-gray-700.transition-colors.duration-300.text-white.font-semibold.py-2.px-4.rounded-md.shadow-md Cancelar
-        button(type="submit").bg-blue-600.hover:bg-blue-700.transition-colors.duration-300.text-white.font-semibold.py-2.px-6.rounded-md.shadow-md Guardar Paciente
+  .row.justify-content-center
+    .col-md-10.col-lg-8
+      .card.shadow-sm.my-5
+        .card-header
+          h1.h4.mb-0 Registrar Nuevo Paciente
+        form(action="/pacientes", method="POST")
+          .card-body.p-4
+            .row.g-3
+              .col-md-6
+                label.form-label(for="nombre") Nombre
+                input.form-control#nombre(type="text", name="nombre", placeholder="Nombre del paciente", required)
+              .col-md-6
+                label.form-label(for="apellido") Apellido
+                input.form-control#apellido(type="text", name="apellido", placeholder="Apellido del paciente", required)
+              .col-md-6
+                label.form-label(for="dni") DNI
+                input.form-control#dni(type="text", name="dni", placeholder="Número de DNI", required)
+              .col-md-6
+                label.form-label(for="fecha_nacimiento") Fecha de Nacimiento
+                input.form-control#fecha_nacimiento(type="date", name="fecha_nacimiento", required)
+              .col-md-6
+                label.form-label(for="genero") Género
+                select.form-select#genero(name="genero", required)
+                  option(value="") Seleccionar Género
+                  option(value="Masculino") Masculino
+                  option(value="Femenino") Femenino
+                  option(value="Otro") Otro
+                  option(value="No especificado") No especificado
+              .col-md-6
+                label.form-label(for="telefono") Teléfono (Opcional)
+                input.form-control#telefono(type="text", name="telefono", placeholder="Número de teléfono")
+              .col-md-6
+                label.form-label(for="email") Email (Opcional)
+                input.form-control#email(type="email", name="email", placeholder="Correo electrónico")
+              .col-md-6
+                label.form-label(for="direccion") Dirección (Opcional)
+                input.form-control#direccion(type="text", name="direccion", placeholder="Dirección del paciente")
+              .col-md-6
+                label.form-label(for="grupo_sanguineo") Grupo Sanguíneo (Opcional)
+                select.form-select#grupo_sanguineo(name="grupo_sanguineo")
+                  option(value="") Seleccionar
+                  option(value="A+") A+
+                  option(value="A-") A-
+                  option(value="B+") B+
+                  option(value="B-") B-
+                  option(value="AB+") AB+
+                  option(value="AB-") AB-
+                  option(value="O+") O+
+                  option(value="O-") O-
+              .col-md-6
+                label.form-label(for="id_obra_social") Obra Social (Opcional)
+                select.form-select#id_obra_social(name="id_obra_social")
+                  option(value="") Seleccionar Obra Social
+                  each os in obrasSociales
+                    option(value=os.id_obra_social)= os.nombre
+              .col-md-6
+                label.form-label(for="numero_afiliado") Número de Afiliado (Opcional)
+                input.form-control#numero_afiliado(type="text", name="numero_afiliado", placeholder="Número de afiliado")
+              .col-md-6
+                label.form-label(for="alergias") Alergias (Opcional)
+                textarea.form-control#alergias(name="alergias", rows="2", placeholder="Alergias conocidas")
+              .col-md-6
+                label.form-label(for="medicamentos_actuales") Medicamentos Actuales (Opcional)
+                textarea.form-control#medicamentos_actuales(name="medicamentos_actuales", rows="2", placeholder="Medicamentos que toma actualmente")
+          .card-footer.text-end.bg-light
+            a.btn.btn-secondary(href="/pacientes") Cancelar
+            button.btn.btn-primary.ms-2(type="submit") Guardar Paciente

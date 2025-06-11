@@ -14,13 +14,13 @@ const Medico = sequelize.define('Medico', {
   },
   apellido: {
     type: DataTypes.STRING(100),
-    allowNull: true 
+    allowNull: true
   },
   id_especialidad: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'especialidad', 
+      model: 'especialidad',
       key: 'id_especialidad'
     }
   },
@@ -33,7 +33,7 @@ const Medico = sequelize.define('Medico', {
     type: DataTypes.STRING(20),
     allowNull: true
   },
-  email: { 
+  email: {
     type: DataTypes.STRING(100),
     allowNull: false,
     unique: true
@@ -49,5 +49,12 @@ const Medico = sequelize.define('Medico', {
   createdAt: 'created_at',
   updatedAt: 'updated_at'
 });
+
+Medico.associate = (models) => {
+  Medico.belongsTo(models.Especialidad, { foreignKey: 'id_especialidad', as: 'especialidad' });
+  Medico.hasMany(models.Evaluacion, { foreignKey: 'id_medico', as: 'evaluaciones' });
+  Medico.hasMany(models.Alta, { foreignKey: 'id_medico', as: 'altas' });
+  Medico.hasMany(models.Turno, { foreignKey: 'id_medico', as: 'turnos' });
+};
 
 module.exports = Medico;

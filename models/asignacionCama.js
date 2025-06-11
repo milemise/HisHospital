@@ -20,12 +20,12 @@ const AsignacionCama = sequelize.define('AsignacionCama', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'cama', 
+      model: 'cama',
       key: 'id_cama'
     }
   },
   fecha_asignacion: {
-    type: DataTypes.DATE, 
+    type: DataTypes.DATE,
     allowNull: false,
     defaultValue: DataTypes.NOW
   },
@@ -34,14 +34,18 @@ const AsignacionCama = sequelize.define('AsignacionCama', {
     allowNull: true
   },
   es_actual: {
-    type: DataTypes.BOOLEAN, 
+    type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: true
   }
 }, {
-  tableName: 'asignacion_cama', 
-  timestamps: false 
+  tableName: 'asignacion_cama',
+  timestamps: false
 });
 
+AsignacionCama.associate = (models) => {
+  AsignacionCama.belongsTo(models.Admision, { foreignKey: 'id_admision', as: 'admision' });
+  AsignacionCama.belongsTo(models.Cama, { foreignKey: 'id_cama', as: 'cama' });
+};
 
 module.exports = AsignacionCama;

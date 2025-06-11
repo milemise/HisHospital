@@ -22,4 +22,8 @@ const Especialidad = sequelize.define('Especialidad', {
   timestamps: false
 });
 
+Especialidad.associate = (models) => {
+  Especialidad.hasMany(models.Medico, { foreignKey: 'id_especialidad', as: 'medicos' });
+};
+
 module.exports = Especialidad;

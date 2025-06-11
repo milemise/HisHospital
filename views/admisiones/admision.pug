@@ -1,32 +1,31 @@
 extends ../layout
 
 block content
-  .max-w-3xl.mx-auto.bg-white.mt-10.p-8.rounded-2xl.shadow-lg
-    h1.text-3xl.font-bold.text-blue-900.mb-6 Detalle de Admisión
-
-    dl.divider-y.divide-gray-200.space-y-4
-      div
-        dt.text-sm.font-medium.text-gray-500 Paciente
-        dd.text-lg.font-semibold.text-gray-800 #{admisión.paciente_nombre}
-
-      div
-        dt.text-sm.font-medium.text-gray-500 Fecha de Ingreso
-        dd.text-gray-700 #{admisión.fecha_ingreso}
-
-      div
-        dt.text-sm.font-medium.text-gray-500 Cama Asignada
-        dd.text-gray-700 Cama #{admisión.cama_numero} - Habitación #{admisión.habitacion_nombre} - Ala #{admisión.ala_nombre}
-
-      div
-        dt.text-sm.font-medium.text-gray-500 Motivo de Internación
-        dd.text-gray-700 #{admisión.motivo}
-
-      div
-        dt.text-sm.font-medium.text-gray-500 Estado
-        dd.text-gray-700 #{admisión.estado}
-
-    .mt-6.flex.justify-end.gap-4
-      a(href="/admisiones", class="text-sm text-gray-500 hover:underline") Volver
-      if admisión.estado != 'alta'
-        form(method="POST" action=`/admisiones/${admisión.id}/alta`)
-          button(type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md shadow") Dar el Alta
+  .row.justify-content-center
+    .col-md-10.col-lg-8
+      .card.shadow-sm.mt-4
+        .card-header.py-3
+          h1.mb-0.h4 Detalle de Admisión
+        .card-body.p-4
+          .row
+            .col-md-6.mb-3
+              p.text-muted.small.mb-1 Paciente
+              p.fw-bold.fs-5 #{admisión.paciente_nombre}
+            .col-md-6.mb-3
+              p.text-muted.small.mb-1 Fecha de Ingreso
+              p.fs-5 #{admisión.fecha_ingreso}
+          .mb-3
+            p.text-muted.small.mb-1 Cama Asignada
+            p Cama #{admisión.cama_numero} - Habitación #{admisión.habitacion_nombre} - Ala #{admisión.ala_nombre}
+          .mb-3
+            p.text-muted.small.mb-1 Motivo de Internación
+            p #{admisión.motivo}
+          .mb-3
+            p.text-muted.small.mb-1 Estado
+            p #{admisión.estado}
+        .card-footer.bg-light.text-end.py-3
+          .d-flex.justify-content-end.gap-2
+            a.btn.btn-secondary(href="/admisiones") Volver
+            if admisión.estado != 'alta'
+              form(method="POST", action=`/admisiones/${admisión.id}/alta`)
+                button.btn.btn-success(type="submit") Dar de Alta al Paciente
