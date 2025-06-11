@@ -1,6 +1,7 @@
 extends ../layout
 
 block content
+<<<<<<< HEAD
   .card.shadow-sm.my-4
     .card-header.py-3
       .d-flex.justify-content-between.align-items-center
@@ -31,3 +32,31 @@ block content
                       a.btn.btn-sm.btn-outline-primary(href="/alas/editar/" + ala.id_ala) Editar
                       form(action="/alas/eliminar/" + ala.id_ala, method="POST", onsubmit="return confirm('¿Está seguro de eliminar esta ala? Esto eliminará todas sus habitaciones si no tienen camas o admisiones activas.');")
                         button.btn.btn-sm.btn-outline-danger(type="submit") Eliminar
+=======
+  .max-w-4xl.mx-auto.bg-white.p-8.rounded-2xl.shadow-xl
+    .flex.justify-between.items-center.mb-6
+      h1.text-3xl.font-bold.text-blue-900 Gestión de Alas
+      a(href="/alas/nuevo", class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md") Nueva Ala
+
+    if alas.length === 0
+      p.text-gray-600.mt-4 No hay alas registradas en el sistema.
+    else
+      .overflow-x-auto.mt-6
+        table.min-w-full.bg-white.border.border-gray-200.rounded-lg.shadow-sm
+          thead.bg-blue-100.text-gray-700.uppercase.text-sm
+            tr
+              th.py-3.px-4.text-left.font-semibold ID
+              th.py-3.px-4.text-left.font-semibold Nombre del Ala
+              th.py-3.px-4.text-left.font-semibold Habitaciones
+              th.py-3.px-4.text-center.font-semibold Acciones
+          tbody.divide-y.divide-gray-200
+            each ala in alas
+              tr(class="hover:bg-gray-50 transition-colors duration-100")
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-800 #{ala.id_ala}
+                td.py-3.px-4.whitespace-nowrap.text-sm.font-medium.text-gray-900 #{ala.nombre}
+                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{ala.habitaciones ? ala.habitaciones.length : 0}
+                td.py-3.px-4.whitespace-nowrap.text-sm.flex.space-x-2.justify-center
+                  a(href=`/alas/editar/${ala.id_ala}`, class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors") Editar
+                  form(action=`/alas/eliminar/${ala.id_ala}`, method="POST", onsubmit="return confirm('¿Está seguro de eliminar esta ala? Esto eliminará todas sus habitaciones si no tienen camas o admisiones activas.');", style="display:inline-block;")
+                    button(type="submit", class="text-red-600 hover:text-red-800 font-medium transition-colors") Eliminar
+>>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0

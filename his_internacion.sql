@@ -25,17 +25,14 @@ SET time_zone = "+00:00";
 
 --
 -- Estructura de tabla para la tabla `ala`
---
--- CAMBIO: 'nombre' de INT a VARCHAR(100) para almacenar nombres de texto
+
+
 CREATE TABLE `ala` (
-  `id_ala` int(11) NOT NULL, -- Renombrado 'Id' a 'id_ala' para consistencia con otras PKs
+  `id_ala` int(11) NOT NULL, 
   `nombre` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `ala`
---
--- CAMBIO: Nombres de ala significativos
+
 INSERT INTO `ala` (`id_ala`, `nombre`) VALUES
 (1, 'Ala A - Cardiología'),
 (2, 'Ala B - Pediatría'),
@@ -45,19 +42,16 @@ INSERT INTO `ala` (`id_ala`, `nombre`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `habitaciones`
---
--- CAMBIO: 'tipo' podría ser ENUM si los tipos son fijos
+-- Estructura de tabla para la tabla `habitaciones
 CREATE TABLE `habitaciones` (
   `id_habitacion` int(11) NOT NULL,
-  `numero` varchar(10) NOT NULL, -- Añadido campo 'numero' para identificar la habitación
-  `tipo` enum('Individual','Compartida','Suite') NOT NULL, -- Uso de ENUM para el tipo
-  `estado` enum('Disponible','Ocupada','Mantenimiento','Limpieza') NOT NULL DEFAULT 'Disponible', -- Añadido 'Limpieza' como estado
-  `id_ala` int(11) NOT NULL -- Renombrado 'ala' a 'id_ala' para consistencia
+  `numero` varchar(10) NOT NULL, 
+  `tipo` enum('Individual','Compartida','Suite') NOT NULL, 
+  `estado` enum('Disponible','Ocupada','Mantenimiento','Limpieza') NOT NULL DEFAULT 'Disponible', 
+  `id_ala` int(11) NOT NULL 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `habitaciones`
+
 --
 INSERT INTO `habitaciones` (`id_habitacion`, `numero`, `tipo`, `estado`, `id_ala`) VALUES
 (3, '101', 'Individual', 'Disponible', 1),
@@ -68,24 +62,21 @@ INSERT INTO `habitaciones` (`id_habitacion`, `numero`, `tipo`, `estado`, `id_ala
 
 --
 -- Estructura de tabla para la tabla `cama`
---
--- CAMBIO: 'estado' a ENUM para mayor claridad, 'genero' a NOT NULL si se requiere
+
 CREATE TABLE `cama` (
-  `id_cama` int(11) NOT NULL, -- Renombrado 'id' a 'id_cama'
+  `id_cama` int(11) NOT NULL,
   `id_habitacion` int(11) NOT NULL,
   `numero` varchar(10) NOT NULL,
-  `estado` enum('Libre','Ocupada','En Limpieza','Fuera de Servicio') NOT NULL DEFAULT 'Libre', -- Uso de ENUM para estado
-  `genero_asignado` enum('M','F') DEFAULT NULL -- Renombrado 'genero' para evitar conflicto, permite NULL si no está asignada
+  `estado` enum('Libre','Ocupada','En Limpieza','Fuera de Servicio') NOT NULL DEFAULT 'Libre', 
+  `genero_asignado` enum('M','F') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `pacientes`
---
--- CAMBIO: 'email' y 'telefono' a NOT NULL si son siempre requeridos
 CREATE TABLE `pacientes` (
-  `id_paciente` int(11) NOT NULL, -- Renombrado 'id' a 'id_paciente'
+  `id_paciente` int(11) NOT NULL, 
   `nombre` varchar(100) NOT NULL,
   `apellido` varchar(100) NOT NULL,
   `dni` varchar(20) NOT NULL UNIQUE,
@@ -93,32 +84,25 @@ CREATE TABLE `pacientes` (
   `genero` enum('Masculino','Femenino','Otro','No especificado') DEFAULT 'No especificado',
   `telefono` varchar(20) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `direccion` varchar(255) DEFAULT NULL,
-  `grupo_sanguineo` enum('A+','A-','B+','B-','AB+','AB-','O+','O-') DEFAULT NULL,
-  `alergias` text DEFAULT NULL,
-  `medicamentos_actuales` text DEFAULT NULL, -- Renombrado 'medicamentos' para claridad
-  `id_obra_social` int(11) DEFAULT NULL, -- Añadido FK para Obras Sociales
+  `id_obra_social` int(11) DEFAULT NULL,
   `numero_afiliado` varchar(50) DEFAULT NULL,
   `activo` tinyint(1) DEFAULT 1,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Añadido DEFAULT
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Añadido DEFAULT
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
   `deleted_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
---
--- Estructura de tabla para la tabla `obras_sociales`
---
+
+
 CREATE TABLE `obras_sociales` (
-  `id_obra_social` int(11) NOT NULL, -- Renombrado 'id'
+  `id_obra_social` int(11) NOT NULL, 
   `nombre` varchar(100) NOT NULL,
-  `codigo` varchar(20) NOT NULL UNIQUE -- Código debería ser único
+  `codigo` varchar(20) NOT NULL UNIQUE 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `obras_sociales`
---
+
 INSERT INTO `obras_sociales` (`id_obra_social`, `nombre`, `codigo`) VALUES
 (1, 'OSDE', 'OSDE210'),
 (2, 'Swiss Medical', 'SWISS456'),
@@ -126,51 +110,48 @@ INSERT INTO `obras_sociales` (`id_obra_social`, `nombre`, `codigo`) VALUES
 
 -- --------------------------------------------------------
 
---
--- Estructura de tabla para la tabla `admisiones`
---
--- CAMBIO: 'fechaAlta' a NULLABLE, 'disponibilidad' eliminado, 'id_cama_actual' para cama actual
+
 CREATE TABLE `admisiones` (
   `id_admision` int(11) NOT NULL,
-  `id_paciente` int(11) DEFAULT NULL, -- Renombrado 'pacienteId' a 'id_paciente', permite NULL para emergencias sin datos iniciales
-  `fecha_ingreso` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Uso de datetime y default
-  `fecha_alta` datetime DEFAULT NULL, -- 'fechaAlta' a NULLABLE y renombrado
-  `motivo_internacion` text DEFAULT NULL, -- Campo para el motivo
-  `es_emergencia` tinyint(1) NOT NULL DEFAULT 0, -- Nuevo campo para identificar emergencias
-  `estado_admision` enum('Activa','En Proceso','Dada de Alta','Cancelada') NOT NULL DEFAULT 'Activa', -- Nuevo campo para el estado de la admisión
+  `id_paciente` int(11) DEFAULT NULL, 
+  `fecha_ingreso` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+  `fecha_alta` datetime DEFAULT NULL,
+  `motivo_internacion` text DEFAULT NULL, 
+  `es_emergencia` tinyint(1) NOT NULL DEFAULT 0, 
+  `estado_admision` enum('Activa','En Proceso','Dada de Alta','Cancelada') NOT NULL DEFAULT 'Activa',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
 
---
--- Estructura de tabla para la tabla `asignacion_cama`
---
--- CAMBIO: 'fecha_liberacion' a NULLABLE, añadido 'es_actual'
+
+
+
+
+
+
+
 CREATE TABLE `asignacion_cama` (
-  `id_asignacion_cama` int(11) NOT NULL, -- Renombrado 'id'
-  `id_admision` int(11) NOT NULL, -- Renombrado 'admision_id'
-  `id_cama` int(11) NOT NULL, -- Renombrado 'cama_id'
+  `id_asignacion_cama` int(11) NOT NULL,
+  `id_admision` int(11) NOT NULL, 
+  `id_cama` int(11) NOT NULL, 
   `fecha_asignacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `fecha_liberacion` datetime DEFAULT NULL, -- NULLABLE
-  `es_actual` tinyint(1) NOT NULL DEFAULT 1 -- Para saber si es la cama actualmente asignada (solo una por admisión activa)
+  `fecha_liberacion` datetime DEFAULT NULL,
+  `es_actual` tinyint(1) NOT NULL DEFAULT 1 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
---
--- Estructura de tabla para la tabla `especialidad`
---
+
+
+
 CREATE TABLE `especialidad` (
-  `id_especialidad` int(11) NOT NULL, -- Renombrado 'id'
-  `nombre` varchar(100) NOT NULL UNIQUE, -- Nombre de especialidad debería ser único
-  `descripcion` text DEFAULT NULL -- Descripción puede ser NULL
+  `id_especialidad` int(11) NOT NULL, 
+  `nombre` varchar(100) NOT NULL UNIQUE, 
+  `descripcion` text DEFAULT NULL 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `especialidad`
---
+
 INSERT INTO `especialidad` (`id_especialidad`, `nombre`, `descripcion`) VALUES
 (1, 'Cardiología', 'Especialidad médica que se encarga del corazón'),
 (2, 'Pediatría', 'Especialidad médica que atiende a niños'),
@@ -178,27 +159,22 @@ INSERT INTO `especialidad` (`id_especialidad`, `nombre`, `descripcion`) VALUES
 
 -- --------------------------------------------------------
 
---
--- Estructura de tabla para la tabla `medicos`
---
--- CAMBIO: Añadidos campos 'email' y 'activo' para compatibilidad con Passport, 'telefono' a NULLABLE
+
 CREATE TABLE `medicos` (
-  `id_medico` int(11) NOT NULL, -- Renombrado 'id' a 'id_medico'
+  `id_medico` int(11) NOT NULL, 
   `nombre` varchar(100) NOT NULL,
-  `apellido` varchar(100) DEFAULT NULL, -- Añadido campo apellido
-  `id_especialidad` int(11) NOT NULL, -- Renombrado 'especialidad'
-  `matricula` varchar(50) NOT NULL UNIQUE, -- Matrícula debería ser única
-  `telefono` varchar(20) DEFAULT NULL, -- NULLABLE
-  `email` varchar(100) NOT NULL UNIQUE, -- Añadido para Passport, debe ser único
-  `activo` tinyint(1) NOT NULL DEFAULT 1, -- Añadido para Passport
+  `apellido` varchar(100) DEFAULT NULL, 
+  `id_especialidad` int(11) NOT NULL, 
+  `matricula` varchar(50) NOT NULL UNIQUE,
+  `telefono` varchar(20) DEFAULT NULL, 
+  `email` varchar(100) NOT NULL UNIQUE, 
+  `activo` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `medicos`
---
--- CAMBIO: Añadidos emails y valores para los nuevos campos
+
+
 INSERT INTO `medicos` (`id_medico`, `nombre`, `apellido`, `id_especialidad`, `matricula`, `telefono`, `email`, `activo`) VALUES
 (1, 'Juan', 'Pérez', 1, 'MP12345', '3515551234', 'juan.perez@hospital.com', 1),
 (2, 'María', 'Gómez', 2, 'MP54321', '3515554321', 'maria.gomez@hospital.com', 1),
@@ -206,89 +182,78 @@ INSERT INTO `medicos` (`id_medico`, `nombre`, `apellido`, `id_especialidad`, `ma
 
 -- --------------------------------------------------------
 
---
--- Estructura de tabla para la tabla `evaluaciones`
---
--- CAMBIO: 'diagnostico' a NULLABLE, 'medico' a 'id_medico', 'pacienteId' a 'id_paciente'
+
+
 CREATE TABLE `evaluaciones` (
-  `id_evaluacion` int(11) NOT NULL, -- Renombrado 'id'
+  `id_evaluacion` int(11) NOT NULL, 
   `id_admision` int(11) NOT NULL,
-  `id_paciente` int(11) DEFAULT NULL, -- Renombrado 'pacienteId', permite NULL inicialmente, pero debe ser el id de un paciente REAL
-  `id_medico` int(11) NOT NULL, -- Renombrado 'medico'
-  `fecha_evaluacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Renombrado 'fecha'
-  `diagnostico` text DEFAULT NULL, -- Puede ser NULL en evaluación inicial
-  `observaciones_medicas` text DEFAULT NULL, -- Nuevo campo para diferenciar de diagnostico
-  `signos_vitales` JSON DEFAULT NULL, -- Considerar guardar signos vitales como JSON si son varios
-  `plan_cuidados` text DEFAULT NULL, -- Nuevo campo para el plan de cuidados
+  `id_paciente` int(11) DEFAULT NULL, 
+  `id_medico` int(11) NOT NULL, 
+  `fecha_evaluacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+  `diagnostico` text DEFAULT NULL, 
+  `observaciones_medicas` text DEFAULT NULL, 
+  `signos_vitales` JSON DEFAULT NULL, 
+  `plan_cuidados` text DEFAULT NULL, 
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
---
--- Estructura de tabla para la tabla `altas`
---
--- CAMBIO: 'fecha_control' a NULLABLE
+
+
+
 CREATE TABLE `altas` (
-  `id_alta` int(11) NOT NULL, -- Renombrado 'id'
-  `id_admision` int(11) NOT NULL UNIQUE, -- Una admisión solo puede tener un alta
-  `id_medico` int(11) NOT NULL, -- Renombrado 'medico_id'
-  `fecha_alta_real` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Renombrado 'fecha'
-  `diagnostico_final` text NOT NULL, -- Renombrado
-  `tratamiento_indicado` text NOT NULL, -- Renombrado
-  `medicamentos_recetados` text NOT NULL, -- Renombrado
-  `fecha_control_sugerido` date DEFAULT NULL, -- Renombrado y NULLABLE
-  `observaciones_alta` text DEFAULT NULL -- Renombrado y NULLABLE
+  `id_alta` int(11) NOT NULL, 
+  `id_admision` int(11) NOT NULL UNIQUE, 
+  `id_medico` int(11) NOT NULL, 
+  `fecha_alta_real` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+  `diagnostico_final` text NOT NULL, 
+  `tratamiento_indicado` text NOT NULL, 
+  `medicamentos_recetados` text NOT NULL, 
+  `fecha_control_sugerido` date DEFAULT NULL, 
+  `observaciones_alta` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
---
--- Estructura de tabla para la tabla `turnos`
---
+
+
 CREATE TABLE `turnos` (
-  `id_turno` int(11) NOT NULL, -- Renombrado 'id'
-  `id_paciente` int(11) DEFAULT NULL, -- Renombrado 'paciente_id'
-  `id_medico` int(11) DEFAULT NULL, -- Renombrado 'medico_id'
-  `fecha_hora` datetime NOT NULL, -- Renombrado 'fecha'
-  `estado` enum('pendiente','confirmado','cancelado','finalizado') NOT NULL -- Añadido 'finalizado'
+  `id_turno` int(11) NOT NULL, 
+  `id_paciente` int(11) DEFAULT NULL,
+  `id_medico` int(11) DEFAULT NULL, 
+  `fecha_hora` datetime NOT NULL,
+  `estado` enum('pendiente','confirmado','cancelado','finalizado') NOT NULL 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
---
--- Estructura de tabla para la tabla `usuarios`
---
--- CAMBIO: ID autoincrementable y PK correcto, email único, contraseña más larga
+
 CREATE TABLE `usuarios` (
-  `id_usuario` int(11) NOT NULL, -- Renombrado 'id' y establecido como PK con AI
-  `nombre_usuario` varchar(100) NOT NULL, -- Renombrado 'nombre'
-  `email` varchar(100) NOT NULL UNIQUE, -- Email debe ser único
-  `password_hash` varchar(255) NOT NULL, -- Renombrado 'contraseña', más largo para hashes modernos
-  `rol` enum('admin','medico','enfermero','recepcion') NOT NULL, -- Añadido 'recepcion'
+  `id_usuario` int(11) NOT NULL, 
+  `nombre_usuario` varchar(100) NOT NULL, 
+  `email` varchar(100) NOT NULL UNIQUE, 
+  `password_hash` varchar(255) NOT NULL, 
+  `rol` enum('admin','medico','enfermero','recepcion') NOT NULL, 
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `usuarios`
---
--- CAMBIO: ID 1, email y contraseña dummy (debes reemplazar con hash real), rol admin
+
+
 INSERT INTO `usuarios` (`id_usuario`, `nombre_usuario`, `email`, `password_hash`, `rol`) VALUES
 (1, 'admin', 'admin@his.com', '$2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqL3LmbrM3i6ZngBzRjKjF3tJQ1dK', 'admin'); -- Contraseña real debe ser hashed
 
 -- --------------------------------------------------------
 
---
--- Estructura de tabla para la tabla `sequelizemeta`
+
+
 --
 CREATE TABLE `sequelizemeta` (
   `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Volcado de datos para la tabla `sequelizemeta`
+`
 --
 INSERT INTO `sequelizemeta` (`name`) VALUES
 ('20250530004355-fix-duplicate-nombre-column.js'),
@@ -310,14 +275,14 @@ ALTER TABLE `admisiones`
 --
 ALTER TABLE `ala`
   ADD PRIMARY KEY (`id_ala`),
-  ADD UNIQUE KEY `nombre` (`nombre`); -- Nombre de ala debería ser único
+  ADD UNIQUE KEY `nombre` (`nombre`); 
 
 --
 -- Indices de la tabla `altas`
 --
 ALTER TABLE `altas`
   ADD PRIMARY KEY (`id_alta`),
-  ADD UNIQUE KEY `id_admision` (`id_admision`), -- Una admisión solo un alta
+  ADD UNIQUE KEY `id_admision` (`id_admision`),
   ADD KEY `id_medico` (`id_medico`);
 
 --
@@ -340,7 +305,7 @@ ALTER TABLE `cama`
 --
 ALTER TABLE `especialidad`
   ADD PRIMARY KEY (`id_especialidad`),
-  ADD UNIQUE KEY `nombre` (`nombre`); -- Nombre de especialidad único
+  ADD UNIQUE KEY `nombre` (`nombre`);
 
 --
 -- Indices de la tabla `evaluaciones`
@@ -370,7 +335,7 @@ ALTER TABLE `medicos`
 --
 ALTER TABLE `obras_sociales`
   ADD PRIMARY KEY (`id_obra_social`),
-  ADD UNIQUE KEY `nombre` (`nombre`); -- Nombre de obra social único
+  ADD UNIQUE KEY `nombre` (`nombre`);
 
 --
 -- Indices de la tabla `pacientes`

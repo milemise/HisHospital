@@ -1,6 +1,7 @@
 extends ../layout
 
 block content
+<<<<<<< HEAD
   .card.shadow-sm.my-4
     .card-header.py-3
       h1.h4.mb-0 Lista de Pacientes
@@ -25,3 +26,28 @@ block content
                 td #{paciente.obra_social}
                 td.text-center
                   a.btn.btn-sm.btn-outline-primary(href=`/pacientes/${paciente.id}/editar`) Editar
+=======
+  .max-w-5xl.mx-auto.mt-10.bg-white.p-6.rounded-2xl.shadow-lg
+    h1.text-3xl.font-bold.text-blue-900.mb-6 Lista de Pacientes
+
+    table.table-auto.w-full.border.border-gray-200.rounded-lg.shadow-sm
+      thead.bg-blue-100
+        tr
+          th.text-left.p-3.text-sm.text-gray-700 Nombre
+          th.text-left.p-3.text-sm.text-gray-700 Teléfono
+          th.text-left.p-3.text-sm.text-gray-700 Dirección
+          th.text-left.p-3.text-sm.text-gray-700 Sexo
+          th.text-left.p-3.text-sm.text-gray-700 Obra Social
+          th.text-left.p-3.text-sm.text-gray-700 Acciones
+
+      tbody
+        each paciente in pacientes
+          tr(class="border-b border-gray-100 hover:bg-blue-50")
+            td.p-3 #{paciente.nombre} #{paciente.apellido}
+            td.p-3 #{paciente.telefono || 'N/A'}
+            td.p-3 #{paciente.direccion || 'N/A'}
+            td.p-3 #{paciente.genero || 'N/A'}
+            td.p-3 #{paciente.obraSocial ? paciente.obraSocial.nombre : 'Sin Obra Social'}
+            td.p-3
+              a(href=`/pacientes/editar/${paciente.id_paciente}`, class="text-blue-600 hover:underline text-sm") Editar
+>>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0

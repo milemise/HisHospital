@@ -1,6 +1,7 @@
 extends ../layout
 
 block content
+<<<<<<< HEAD
   .row.justify-content-center
     .col-md-7.col-lg-6
       .card.shadow-sm.my-5
@@ -32,6 +33,40 @@ block content
           .card-footer.text-end.bg-light
             a.btn.btn-secondary(href="/camas") Cancelar
             button.btn.btn-primary.ms-2(type="submit") Guardar Cama
+=======
+  .max-w-md.mx-auto.bg-white.mt-10.p-8.rounded-2xl.shadow-xl
+    h1.text-3xl.font-bold.text-blue-900.mb-6 Registrar Nueva Cama
+
+    form(action="/camas", method="POST", class="space-y-6")
+      div
+        label(for="id_habitacion", class="block text-sm font-medium text-gray-700") Habitación
+        select(id="id_habitacion", name="id_habitacion", required, class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          option(value="") Seleccionar Habitación
+          each h in habitaciones
+            option(value=h.id_habitacion)= `Hab: ${h.numero} (Ala: ${h.ala.nombre}, Tipo: ${h.tipo})`
+
+      div
+        label(for="numero", class="block text-sm font-medium text-gray-700") Número de Cama
+        input(type="text", name="numero", id="numero", placeholder="Ej: Cama 1, Cama A", required, class="w-full mt-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+      
+      div
+        label(for="estado", class="block text-sm font-medium text-gray-700") Estado Inicial
+        select(name="estado", id="estado", required, class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          option(value="Libre") Libre
+          option(value="En Limpieza") En Limpieza
+          option(value="Fuera de Servicio") Fuera de Servicio
+      
+      div(id="generoAsignadoField", style="display:none;")
+        label(for="genero_asignado", class="block text-sm font-medium text-gray-700") Género Asignado (solo para habitaciones compartidas)
+        select(name="genero_asignado", id="genero_asignado", class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          option(value="") Mixto / No Asignado
+          option(value="M") Masculino
+          option(value="F") Femenino
+
+      .flex.justify-end.space-x-4.pt-4
+        a(href="/camas", class="bg-gray-600 hover:bg-gray-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md") Cancelar
+        button(type="submit", class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-2 px-6 rounded-md shadow-md") Guardar Cama
+>>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0
 
 block scripts
   script.

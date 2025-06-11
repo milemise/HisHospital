@@ -1,10 +1,10 @@
 const { Usuario } = require('../models');
-const bcrypt = require('bcryptjs'); 
+const bcrypt = require('bcryptjs');
 
 exports.listarUsuarios = async (req, res) => {
     try {
         const usuarios = await Usuario.findAll({
-            attributes: ['id_usuario', 'nombre_usuario', 'email', 'rol', 'created_at'] 
+            attributes: ['id_usuario', 'nombre_usuario', 'email', 'rol', 'created_at']
         });
         res.render('usuarios/index', {
             usuarios: usuarios,
@@ -52,7 +52,7 @@ exports.guardarUsuario = async (req, res) => {
 exports.formularioEditar = async (req, res) => {
     try {
         const usuario = await Usuario.findByPk(req.params.id, {
-            attributes: ['id_usuario', 'nombre_usuario', 'email', 'rol'] 
+            attributes: ['id_usuario', 'nombre_usuario', 'email', 'rol']
         });
         if (!usuario) {
             req.flash('error', 'Usuario no encontrado.');

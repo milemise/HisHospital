@@ -85,6 +85,7 @@ block content
                     input.form-control#numero_afiliado_nuevo(type="text", name="numero_afiliado_nuevo", placeholder="Número de Afiliado")
                     label(for="numero_afiliado_nuevo") Número de Afiliado
 
+<<<<<<< HEAD
             .card.mb-4
               .card-header.fw-bold Detalles de la Admisión
               .card-body
@@ -109,6 +110,108 @@ block content
               button.btn.btn-primary.btn-lg(type="submit") Guardar Admisión
 
 block scripts append
+=======
+    form(action="/admisiones", method="POST", class="space-y-6")
+
+      div.mb-6.p-5.border.border-gray-200.rounded-lg.bg-gray-50
+        h3.text-lg.font-semibold.text-gray-800.mb-3 Datos del Paciente
+        
+        div.flex.items-center.justify-between.mb-4
+          div.flex-grow
+            label.block.text-sm.font-medium.text-gray-700 Seleccionar Paciente Existente
+            select(name="id_paciente_seleccionado", id="pacienteSelector", required, class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+              option(value="") -- Seleccionar paciente --
+              option(value="nuevo") -- Registrar Nuevo Paciente --
+              each p in pacientes
+                option(value=p.id_paciente)= p.nombre + ' ' + p.apellido + ' (DNI: ' + p.dni + ')'
+          
+          .ml-6
+            input(type="checkbox", name="es_emergencia", id="es_emergencia", class="form-checkbox h-5 w-5 text-red-600 rounded-md focus:ring-red-500")
+            label(for="es_emergencia", class="ml-2 text-base text-red-700 font-semibold") Admisión de Emergencia
+
+      div(id="nuevoPacienteFields", class="space-y-4 p-5 border border-gray-200 rounded-lg bg-gray-50", style="display: none;")
+        h3.text-lg.font-semibold.text-gray-800.mb-3 Información del Nuevo Paciente
+        div(class="grid grid-cols-1 md:grid-cols-2 gap-4")
+          div
+            label.block.text-sm.font-medium.text-gray-700 Nombre
+            input(type="text", name="nombre_paciente_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          div
+            label.block.text-sm.font-medium.text-gray-700 Apellido
+            input(type="text", name="apellido_paciente_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          div
+            label.block.text-sm.font-medium.text-gray-700 DNI
+            input(type="text", name="dni_paciente_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          div
+            label.block.text-sm.font-medium.text-gray-700 Fecha de Nacimiento
+            input(type="date", name="fecha_nacimiento_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          div
+            label.block.text-sm.font-medium.text-gray-700 Género
+            select(name="genero_paciente_nuevo", class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+              option(value="") Seleccionar Género
+              option(value="Masculino") Masculino
+              option(value="Femenino") Femenino
+              option(value="Otro") Otro
+              option(value="No especificado") No especificado
+          div
+            label.block.text-sm.font-medium.text-gray-700 Teléfono
+            input(type="text", name="telefono_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          div
+            label.block.text-sm.font-medium.text-gray-700 Email
+            input(type="email", name="email_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          div
+            label.block.text-sm.font-medium.text-gray-700 Dirección
+            input(type="text", name="direccion_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          div
+            label.block.text-sm.font-medium.text-gray-700 Grupo Sanguíneo
+            select(name="grupo_sanguineo_nuevo", class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+              option(value="") Seleccionar
+              option(value="A+") A+
+              option(value="A-") A-
+              option(value="B+") B+
+              option(value="B-") B-
+              option(value="AB+") AB+
+              option(value="AB-") AB-
+              option(value="O+") O+
+              option(value="O-") O-
+          div
+            label.block.text-sm.font-medium.text-gray-700 Alergias
+            textarea(name="alergias_nuevo", rows="2", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          div
+            label.block.text-sm.font-medium.text-gray-700 Medicamentos Actuales
+            textarea(name="medicamentos_nuevo", rows="2", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+          div
+            label.block.text-sm.font-medium.text-gray-700 Obra Social
+            select(name="id_obra_social_nuevo", class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+              option(value="") Seleccionar Obra Social
+              each os in obrasSociales
+                option(value=os.id_obra_social)= os.nombre
+          div
+            label.block.text-sm.font-medium.text-gray-700 Número de Afiliado
+            input(type="text", name="numero_afiliado_nuevo", class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+
+      div.space-y-4.p-5.border.border-gray-200.rounded-lg.bg-gray-50
+        h3.text-lg.font-semibold.text-gray-800.mb-3 Detalles de la Admisión
+        div
+          label.block.text-sm.font-medium.text-gray-700 Fecha de Ingreso
+          input(type="datetime-local", name="fecha_ingreso", value=new Date().toISOString().slice(0, 16), required, class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+
+        div
+          label.block.text-sm.font-medium.text-gray-700 Motivo de Internación
+          textarea(name="motivo_internacion", placeholder="Describa el motivo de la internación", required, class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500", rows="3")
+
+      div.mb-6.p-5.border.border-gray-200.rounded-lg.bg-gray-50
+        h3.text-lg.font-semibold.text-gray-800.mb-3 Asignación de Cama
+        div
+          label.block.text-sm.font-medium.text-gray-700 Cama Disponible
+          select(id="id_cama_asignada", name="id_cama_asignada", required, class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
+            option(value="") -- Seleccione una cama disponible --
+            each cama in camasDisponibles
+              option(value=cama.id_cama)= `Hab: ${cama.habitacion.numero} (Ala: ${cama.habitacion.ala.nombre}) - Cama: ${cama.numero} ${cama.genero_asignado ? '(Género: ' + (cama.genero_asignado === 'M' ? 'Masculino' : 'Femenino') + ')' : '(Mixto/Individual)'}`
+
+      button(type="submit", class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-2 px-6 rounded-md shadow-md") Guardar Admisión
+
+block scripts
+>>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0
   script.
     const pacienteSelector = document.getElementById('pacienteSelector');
     const nuevoPacienteFields = document.getElementById('nuevoPacienteFields');

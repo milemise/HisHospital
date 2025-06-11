@@ -1,4 +1,4 @@
-extends layout
+extends ../layout
 
 block content
   .container.mt-5
@@ -7,6 +7,7 @@ block content
         .card.shadow-lg.p-4
           h1.card-title.h3.text-primary.fw-bold.mb-4 Editar Registro
 
+<<<<<<< HEAD
           form(action="/editar" method="POST")
             .row.g-3.mb-4
               .col-md-6
@@ -21,3 +22,21 @@ block content
 
             .text-end.mt-4
               button.btn.btn-primary(type="submit") Guardar Cambios
+=======
+    form(action="/editar", method="POST", class="space-y-6")
+      
+      div
+        label(for="nombre", class="block text-sm font-medium text-gray-700 mb-1") Nombre
+        input(type="text", name="nombre", id="nombre", value=registro.nombre || '', required, class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500")
+
+      div
+        label(for="telefono", class="block text-sm font-medium text-gray-700 mb-1") Teléfono
+        input(type="text", name="telefono", id="telefono", value=registro.telefono || '', required, class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500")
+
+      div
+        label(for="direccion", class="block text-sm font-medium text-gray-700 mb-1") Dirección
+        input(type="text", name="direccion", id="direccion", value=registro.direccion || '', class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500")
+
+      .text-right.pt-4
+        button(type="submit", class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md shadow-md transition-colors duration-300") Guardar Cambios
+>>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0
