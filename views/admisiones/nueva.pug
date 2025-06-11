@@ -107,37 +107,3 @@ block content
 
             .d-flex.justify-content-end
               button.btn.btn-primary.btn-lg(type="submit") Guardar Admisión
-              block scripts append
-  script.
-    const pacienteSelector = document.getElementById('pacienteSelector');
-    const nuevoPacienteFields = document.getElementById('nuevoPacienteFields');
-    const esEmergenciaCheckbox = document.getElementById('es_emergencia');
-
-    const nuevoPacienteInputs = nuevoPacienteFields.querySelectorAll('input, select, textarea');
-
-    function toggleNuevoPacienteFields() {
-      const isNuevoPacienteSelected = pacienteSelector.value === 'nuevo';
-      const isEmergenciaChecked = esEmergenciaCheckbox.checked;
-
-      const isExistingPatientSelected = pacienteSelector.value && pacienteSelector.value !== 'nuevo';
-
-      const shouldShow = isNuevoPacienteSelected || isEmergenciaChecked;
-
-      nuevoPacienteFields.style.display = shouldShow ? 'block' : 'none';
-
-      nuevoPacienteInputs.forEach(input => {
-        let isRequired = false;
-        if (shouldShow) {
-          const requiredForNew = ['nombre_paciente_nuevo', 'apellido_paciente_nuevo', 'dni_paciente_nuevo', 'genero_paciente_nuevo'];
-          if (requiredForNew.includes(input.name)) {
-            isRequired = true;
-          }
-        }
-        input.required = isRequired;
-      });
-
-      pacienteSelector.required = !shouldShow && !isExistingPatientSelected;
-    }
-    pacienteSelector.addEventListener('change', toggleNuevoPacienteFields);
-    esEmergenciaCheckbox.addEventListener('change', toggleNuevoPacienteFields);
-    document.addEventListener('DOMContentLoaded', toggleNuevoPacienteFields);

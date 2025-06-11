@@ -10,7 +10,7 @@ block content
             a.btn.btn-warning.btn-sm.text-dark(href="/admisiones/editar/" + admision.id_admision)
               i.fas.fa-pencil-alt.me-1
               | Editar
-            if admision.estado === 'Activo' || admision.estado === 'En Proceso'
+            if admision.estado_admision === 'Activo' || admision.estado_admision === 'En Proceso'
               a.btn.btn-info.btn-sm.text-white(href="/evaluaciones/nueva/" + admision.id_admision) Registrar Evaluación
               a.btn.btn-success.btn-sm.text-white(href="/altas/nueva/" + admision.id_admision) Dar Alta
               form(action="/admisiones/cancelar/" + admision.id_admision, method="POST", onsubmit="return confirm('¿Está seguro de cancelar esta admisión?');", style="display:inline-block;")
@@ -30,8 +30,8 @@ block content
                 p.mb-2 #[strong Tipo:]
                   span(class=admision.es_emergencia ? 'fw-bold text-danger' : 'fw-bold text-primary') #{admision.es_emergencia ? 'Emergencia' : 'Normal'}
                 p.mb-2 #[strong Estado:]
-                  - const estadoClass = admision.estado === 'Activo' ? 'bg-success' : admision.estado === 'Dada de Alta' ? 'bg-primary' : admision.estado === 'Cancelada' ? 'bg-danger' : 'bg-warning text-dark'
-                  span(class=`badge ${estadoClass}`) #{admision.estado}
+                  - const estadoClass = admision.estado_admision === 'Activo' ? 'bg-success' : admision.estado_admision === 'Dada de Alta' ? 'bg-primary' : admision.estado_admision === 'Cancelada' ? 'bg-danger' : 'bg-warning text-dark'
+                  span(class=`badge ${estadoClass}`) #{admision.estado_admision}
 
           .col-md-6
             .card.h-100
@@ -53,15 +53,11 @@ block content
         .card.mb-4
           .card-header.h5.bg-light.text-dark Cama Asignada Actualmente
           .card-body
-            if admision.asignacionesCama && admision.asignacionesCama.length > 0 && admision.asignacionesCama[0].cama
-              - const camaActual = admision.asignacionesCama[0].cama
-              - const habitacionActual = camaActual.habitacion
-              - const alaActual = habitacionActual.ala
-              p.mb-2 #[strong Ala:] #{alaActual.nombre}
-              p.mb-2 #[strong Habitación:] #{habitacionActual.numero} (#{habitacionActual.tipo})
-              p.mb-2 #[strong Cama:] #{camaActual.numero} (Estado: #{camaActual.estado})
-              p.mb-2 #[strong Género Asignado a Cama:] #{camaActual.genero_asignado ? (camaActual.genero_asignado === 'M' ? 'Masculino' : 'Femenino') : 'Mixto/Individual'}
-              p.mb-2 #[strong Fecha de Asignación:] #{admision.asignacionesCama[0].fecha_asignacion ? new Date(admision.asignacionesCama[0].fecha_asignacion).toLocaleString('es-ES') : 'N/A'}
+            if admision.cama && admision.cama.habitacion && admision.cama.habitacion.ala
+              p.mb-2 #[strong Ala:] #{admision.cama.habitacion.ala.nombre}
+              p.mb-2 #[strong Habitación:] #{admision.cama.habitacion.numero} (#{admision.cama.habitacion.tipo})
+              p.mb-2 #[strong Cama:] #{admision.cama.numero} (Estado: #{admision.cama.estado})
+              p.mb-2 #[strong Género Asignado a Cama:] #{admision.cama.genero_asignado ? (admision.cama.genero_asignado === 'M' ? 'Masculino' : 'Femenino') : 'Mixto/Individual'}
             else
               p.text-muted No hay cama asignada actualmente para esta admisión.
 

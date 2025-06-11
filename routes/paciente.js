@@ -17,14 +17,14 @@ const isAuthorizedToManagePatients = (req, res, next) => {
     res.redirect('/');
 };
 
-router.use(isAuthenticated); 
+router.use(isAuthenticated);
 router.use(isAuthorizedToManagePatients);
 
 router.get('/', pacienteController.listarPacientes);
 router.get('/nuevo', pacienteController.formularioNueva);
 router.post('/', pacienteController.guardarPaciente);
-router.get('/editar/:id', pacienteController.formularioEditar);
-router.post('/actualizar/:id', pacienteController.actualizarPaciente);
-router.post('/eliminar/:id', pacienteController.eliminarPaciente);
+router.get('/editar/:id_paciente', pacienteController.formularioEditar);
+router.post('/actualizar/:id_paciente', pacienteController.actualizarPaciente);
+router.post('/eliminar/:id_paciente', pacienteController.eliminarPaciente);
 
 module.exports = router;

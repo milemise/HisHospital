@@ -18,6 +18,7 @@ block content
                 .col-md-6
                   p.mb-2 #[strong Ingreso:] #{admision.fecha_ingreso ? new Date(admision.fecha_ingreso).toLocaleString('es-ES') : 'N/A'}
                   p.mb-0 #[strong Estado:]
+                    // CAMBIO CLAVE AQUÍ: usar admision.estado_admision
                     - const estadoClass = admision.estado_admision === 'Activa' ? 'bg-success' : admision.estado_admision === 'Dada de Alta' ? 'bg-primary' : admision.estado_admision === 'Cancelada' ? 'bg-danger' : 'bg-warning text-dark'
                     span(class=`badge ${estadoClass}`) #{admision.estado_admision}
           
@@ -35,8 +36,9 @@ block content
                 .col-md-6.mb-3.mb-md-0
                   label.form-label Cama Actualmente Asignada
                   p.form-control-plaintext
-                    if admision.asignacionesCama && admision.asignacionesCama.length > 0 && admision.asignacionesCama[0].cama
-                      | Hab: #{admision.asignacionesCama[0].cama.habitacion.numero} (Ala: #{admision.asignacionesCama[0].cama.habitacion.ala.nombre}) - Cama: #{admision.asignacionesCama[0].cama.numero}
+                    // CAMBIO CLAVE AQUÍ: Simplificar a admision.cama
+                    if admision.cama && admision.cama.habitacion && admision.cama.habitacion.ala
+                      | Hab: #{admision.cama.habitacion.numero} (Ala: #{admision.cama.habitacion.ala.nombre}) - Cama: #{admision.cama.numero}
                     else
                       strong.text-muted Ninguna
                 .col-md-6
@@ -47,5 +49,5 @@ block content
                       option(value=cama.id_cama, selected=(cama.id_cama === admision.id_cama_asignada))= `Hab: ${cama.habitacion.numero} (Ala: ${cama.habitacion.ala.nombre}) - Cama: ${cama.numero} ${cama.genero_asignado ? '(Género: ' + (cama.genero_asignado === 'M' ? 'Masculino' : 'Femenino') + ')' : '(Mixto/Individual)'}`
           
           .d-flex.justify-content-end.gap-2
-            a.btn.btn-secondary(href="/admisiones/detalles/" + admision.id_admision) Cancelar
+            a.btn.btn-secondary.me-2(href="/admisiones/detalles/" + admision.id_admision) Cancelar
             button.btn.btn-primary(type="submit") Actualizar Admisión

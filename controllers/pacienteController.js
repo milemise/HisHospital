@@ -1,4 +1,4 @@
-const { Paciente, ObraSocial, Admision } = require('../models'); 
+const { Paciente, ObraSocial, Admision } = require('../models');
 
 exports.listarPacientes = async (req, res) => {
     try {
@@ -50,7 +50,7 @@ exports.guardarPaciente = async (req, res) => {
             email, direccion, grupo_sanguineo, alergias, medicamentos_actuales,
             id_obra_social: id_obra_social || null,
             numero_afiliado,
-            activo: true 
+            activo: true
         });
         req.flash('success', 'Paciente creado con éxito.');
         res.redirect('/pacientes');
@@ -69,7 +69,7 @@ exports.guardarPaciente = async (req, res) => {
 
 exports.formularioEditar = async (req, res) => {
     try {
-        const paciente = await Paciente.findByPk(req.params.id, {
+        const paciente = await Paciente.findByPk(req.params.id_paciente, { // <--- CAMBIO AQUÍ: id_paciente
             include: [{ model: ObraSocial, as: 'obraSocial' }]
         });
         if (!paciente) {
@@ -92,7 +92,7 @@ exports.formularioEditar = async (req, res) => {
 
 exports.actualizarPaciente = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id_paciente } = req.params; // <--- CAMBIO AQUÍ: id_paciente
         const {
             nombre, apellido, dni, fecha_nacimiento, genero, telefono,
             email, direccion, grupo_sanguineo, alergias, medicamentos_actuales,
@@ -103,7 +103,7 @@ exports.actualizarPaciente = async (req, res) => {
             throw new Error('Faltan campos obligatorios para el paciente.');
         }
 
-        const paciente = await Paciente.findByPk(id);
+        const paciente = await Paciente.findByPk(id_paciente); // <--- CAMBIO AQUÍ: id_paciente
         if (!paciente) {
             throw new Error('Paciente no encontrado.');
         }
@@ -126,27 +126,40 @@ exports.actualizarPaciente = async (req, res) => {
             errorMessage = error.message || errorMessage;
         }
         req.flash('error', errorMessage);
-        res.redirect(`/pacientes/editar/${req.params.id}`);
+        res.redirect(`/pacientes/editar/${req.params.id_paciente}`); // <--- CAMBIO AQUÍ: id_paciente
     }
 };
 
 exports.eliminarPaciente = async (req, res) => {
     try {
-        const { id } = req.params;
-        const paciente = await Paciente.findByPk(id);
+        const { id_paciente } = req.params; // <--- CAMBIO AQUÍ: id_paciente
+        const paciente = await Paciente.findByPk(id_paciente); // <--- CAMBIO AQUÍ: id_paciente
         if (!paciente) {
             throw new Error('Paciente no encontrado.');
         }
-        const admisionesActivas = await Admision.count({ where: { id_paciente: id, estado_admision: 'Activa' } });
+        const admisionesActivas = await Admision.count({ where: { id_paciente: id_paciente, estado: 'Activo' } }); // <--- CAMBIO AQUÍ: id_paciente, estado
         if (admisionesActivas > 0) {
             throw new Error('No se puede eliminar el paciente porque tiene admisiones activas. Primero de de alta o cancele las admisiones.');
         }
-        await paciente.destroy(); 
+        await paciente.destroy();
         req.flash('success', 'Paciente eliminado con éxito.');
         res.redirect('/pacientes');
     } catch (error) {
         console.error('Error al eliminar paciente:', error);
         req.flash('error', `Error al eliminar el paciente: ${error.message}`);
+        res.redirect('/pacientes');
+    }
+};
+
+// Ruta para mostrar formulario de nueva admisión (usando un paciente existente)
+exports.formularioAdmisionParaPaciente = async (req, res) => {
+    try {
+        const pacienteId = req.params.id_paciente; // <--- CAMBIO AQUÍ: id_paciente
+        // Redirige al formulario de nueva admisión, posiblemente pre-llenando el paciente
+        res.redirect(`/admisiones/nueva?id_paciente=${pacienteId}`);
+    } catch (error) {
+        console.error('Error al preparar admisión para paciente:', error);
+        req.flash('error', 'No se pudo iniciar el proceso de admisión.');
         res.redirect('/pacientes');
     }
 };

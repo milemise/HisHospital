@@ -34,13 +34,13 @@ block content
                     td #{admision.fecha_ingreso ? new Date(admision.fecha_ingreso).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}
                     td #{admision.fecha_alta ? new Date(admision.fecha_alta).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Pendiente'}
                     td
-                      if admision.asignacionesCama && admision.asignacionesCama.length > 0 && admision.asignacionesCama[0].cama
-                        | Hab: #{admision.asignacionesCama[0].cama.habitacion.numero} - Cama: #{admision.asignacionesCama[0].cama.numero}
+                      if admision.cama && admision.cama.habitacion
+                        | Hab: #{admision.cama.habitacion.numero} - Cama: #{admision.cama.numero}
                       else
                         span.text-muted Sin asignar
                     td
-                      - const estadoClass = admision.estado === 'Activo' ? 'bg-success' : admision.estado === 'Dada de Alta' ? 'bg-primary' : admision.estado === 'Cancelada' ? 'bg-danger' : 'bg-warning text-dark'
-                      span(class=`badge ${estadoClass}`) #{admision.estado}
+                      - const estadoClass = admision.estado_admision === 'Activo' ? 'bg-success' : admision.estado_admision === 'Dada de Alta' ? 'bg-primary' : admision.estado_admision === 'Cancelada' ? 'bg-danger' : 'bg-warning text-dark'
+                      span(class=`badge ${estadoClass}`) #{admision.estado_admision}
                     td.text-center
                       .btn-group
                         a.btn.btn-sm.btn-outline-secondary(href="/admisiones/detalles/" + admision.id_admision, title="Ver Detalles")
@@ -48,7 +48,7 @@ block content
                         button.btn.btn-sm.btn-outline-secondary.dropdown-toggle.dropdown-toggle-split(type="button", data-bs-toggle="dropdown", aria-expanded="false")
                           span.visually-hidden Toggle Dropdown
                         ul.dropdown-menu
-                          if admision.estado === 'Activo' || admision.estado === 'En Proceso'
+                          if admision.estado_admision === 'Activo' || admision.estado_admision === 'En Proceso'
                             li: a.dropdown-item(href="/admisiones/editar/" + admision.id_admision) Editar
                             li: a.dropdown-item(href="/evaluaciones/nueva/" + admision.id_admision) Evaluar
                             li: a.dropdown-item(href="/altas/nueva/" + admision.id_admision) Dar Alta

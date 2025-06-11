@@ -10,9 +10,9 @@ const Admision = sequelize.define('Admision', {
   },
   id_paciente: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: false,
     references: {
-      model: 'pacientes',
+      model: 'pacientes', 
       key: 'id_paciente'
     }
   },
@@ -27,17 +27,25 @@ const Admision = sequelize.define('Admision', {
   },
   motivo_internacion: {
     type: DataTypes.TEXT,
-    allowNull: true
+    allowNull: false 
   },
   es_emergencia: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false
   },
-  estado_admision: {
-    type: DataTypes.ENUM('Activa', 'En Proceso', 'Dada de Alta', 'Cancelada'),
+  estado_admision: { 
+    type: DataTypes.ENUM('Activo', 'En Proceso', 'Dada de Alta', 'Cancelada'),
     allowNull: false,
-    defaultValue: 'Activa'
+    defaultValue: 'En Proceso'
+  },
+  id_cama_asignada: { 
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'cama',
+      key: 'id_cama'
+    }
   }
 }, {
   tableName: 'admisiones',
@@ -48,8 +56,8 @@ const Admision = sequelize.define('Admision', {
 
 Admision.associate = (models) => {
   Admision.belongsTo(models.Paciente, { foreignKey: 'id_paciente', as: 'paciente' });
+  Admision.belongsTo(models.Cama, { foreignKey: 'id_cama_asignada', as: 'cama' });
   Admision.hasMany(models.Evaluacion, { foreignKey: 'id_admision', as: 'evaluaciones' });
-  Admision.hasMany(models.AsignacionCama, { foreignKey: 'id_admision', as: 'asignacionesCama' });
   Admision.hasOne(models.Alta, { foreignKey: 'id_admision', as: 'alta' });
 };
 

@@ -28,7 +28,6 @@ block content
             each paciente in pacientes
               tr
                 td.fw-medium #{paciente.nombre} #{paciente.apellido}
-                // CAMBIO CLAVE AQUÍ: Asegurarse de que sea un objeto Date
                 td #{paciente.fecha_nacimiento ? new Date(paciente.fecha_nacimiento).toLocaleDateString() : 'N/A'}
                 td
                   span.badge.rounded-pill(class=(paciente.sexo === 'M' ? 'bg-primary' : 'bg-danger'))
@@ -41,9 +40,9 @@ block content
                 td.font-medium #{(paciente.ultima_admision && paciente.ultima_admision.habitacion) || '—'}
                 td
                   .btn-group.btn-group-sm(role='group')
-                    a(href=`/pacientes/${paciente.id}`).btn.btn-outline-primary(title="Ver Detalle")
+                    a(href=`/pacientes/${paciente.id_paciente}`).btn.btn-outline-primary(title="Ver Detalle")
                       i.fas.fa-eye
-                    a(href=`/pacientes/editar/${paciente.id}`).btn.btn-outline-warning(title="Editar")
+                    a(href=`/pacientes/editar/${paciente.id_paciente}`).btn.btn-outline-warning(title="Editar")
                       i.fas.fa-edit
-                    a(href=`/pacientes/admision/${paciente.id}`).btn.btn-outline-info(title="Nueva Admisión")
+                    a(href=`/pacientes/admision/${paciente.id_paciente}`).btn.btn-outline-info(title="Nueva Admisión")
                       i.fas.fa-procedures

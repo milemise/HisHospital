@@ -1,31 +1,34 @@
 extends ../layout
 
 block content
-  .row.justify-content-center
-    .col-md-10.col-lg-8
-      .card.shadow-sm.mt-4
-        .card-header.py-3
-          h1.mb-0.h4 Detalle de Admisión
-        .card-body.p-4
-          .row
-            .col-md-6.mb-3
-              p.text-muted.small.mb-1 Paciente
-              p.fw-bold.fs-5 #{admisión.paciente_nombre}
-            .col-md-6.mb-3
-              p.text-muted.small.mb-1 Fecha de Ingreso
-              p.fs-5 #{admisión.fecha_ingreso}
-          .mb-3
-            p.text-muted.small.mb-1 Cama Asignada
-            p Cama #{admisión.cama_numero} - Habitación #{admisión.habitacion_nombre} - Ala #{admisión.ala_nombre}
-          .mb-3
-            p.text-muted.small.mb-1 Motivo de Internación
-            p #{admisión.motivo}
-          .mb-3
-            p.text-muted.small.mb-1 Estado
-            p #{admisión.estado}
-        .card-footer.bg-light.text-end.py-3
-          .d-flex.justify-content-end.gap-2
-            a.btn.btn-secondary(href="/admisiones") Volver
-            if admisión.estado != 'alta'
-              form(method="POST", action=`/admisiones/${admisión.id}/alta`)
-                button.btn.btn-success(type="submit") Dar de Alta al Paciente
+  .container.mt-4
+    .card.shadow-lg.p-4
+      .card-header.bg-primary.text-white.py-3
+        h1.mb-0.h4 Detalles de Admisión ##{admision.id_admision}
+      .card-body.p-4
+        .row
+          .col-md-6.mb-3
+            p.text-muted.small.mb-1 Paciente
+            p.fw-bold.fs-5 #{admision.paciente ? admision.paciente.nombre + ' ' + admision.paciente.apellido : 'N/A'}
+          .col-md-6.mb-3
+            p.text-muted.small.mb-1 Fecha de Ingreso
+            p.fs-5 #{admision.fecha_ingreso ? new Date(admision.fecha_ingreso).toLocaleString('es-ES') : 'N/A'}
+        .mb-3
+          p.text-muted.small.mb-1 Cama Asignada
+          p
+            if admision.cama && admision.cama.habitacion && admision.cama.habitacion.ala
+              | Cama #{admision.cama.numero} - Habitación #{admision.cama.habitacion.numero} - Ala #{admision.cama.habitacion.ala.nombre}
+            else
+              | N/A
+        .mb-3
+          p.text-muted.small.mb-1 Motivo de Internación
+          p #{admision.motivo_internacion || 'N/A'}
+        .mb-3
+          p.text-muted.small.mb-1 Estado
+          p #{admision.estado_admision}
+      .card-footer.bg-light.text-end.py-3
+        .d-flex.justify-content-end.gap-2
+          a.btn.btn-secondary(href="/admisiones") Volver
+          if admision.estado_admision != 'Dada de Alta' && admision.estado_admision != 'Cancelada'
+            form(method="POST", action=`/admisiones/${admision.id_admision}/alta`, style="display:inline-block;")
+              button.btn.btn-success(type="submit") Dar de Alta al Paciente

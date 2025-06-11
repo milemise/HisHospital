@@ -15,10 +15,11 @@ router.get('/', admisionesController.listarAdmisiones);
 router.get('/nueva', admisionesController.formularioNueva);
 router.post('/', admisionesController.guardarAdmision); 
 
-router.get('/editar/:id', admisionesController.formularioEditar);
-router.post('/actualizar/:id', admisionesController.actualizarAdmision);
-router.post('/cancelar/:id', admisionesController.cancelarAdmision); 
+// CAMBIOS CLAVE AQUÍ: usar :id_admision
+router.get('/editar/:id_admision', admisionesController.formularioEditar);
+router.post('/actualizar/:id_admision', admisionesController.actualizarAdmision);
+router.post('/cancelar/:id_admision', admisionesController.cancelarAdmision); 
 router.get('/dar-alta/:id_admision', admisionesController.darAlta); 
-router.get('/detalles/:id', admisionesController.verDetalles); 
+router.get('/detalles/:id_admision', admisionesController.verDetalles); 
 
 module.exports = router;
