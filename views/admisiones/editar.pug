@@ -1,14 +1,14 @@
 extends ../layout
 
 block content
-<<<<<<< HEAD
-  .row.justify-content-center
-    .col-lg-10.col-xl-9
-      .card.shadow-sm.my-4
-        .card-header
-          h1.h4.mb-0 Editar Admisión ##{admision.id_admision}
-        .card-body.p-4
-          .card.bg-light.mb-4
+  .container.mt-4
+    .card.shadow-lg.p-4
+      .card-header.bg-primary.text-white.py-3
+        h1.card-title.h3.mb-0 Editar Admisión ##{admision.id_admision}
+
+      .card-body.p-4
+        form(action="/admisiones/actualizar/" + admision.id_admision, method="POST")
+          .card.mb-4.bg-light
             .card-header.fw-bold Paciente Asociado
             .card-body
               .row
@@ -21,138 +21,31 @@ block content
                     - const estadoClass = admision.estado_admision === 'Activa' ? 'bg-success' : admision.estado_admision === 'Dada de Alta' ? 'bg-primary' : admision.estado_admision === 'Cancelada' ? 'bg-danger' : 'bg-warning text-dark'
                     span(class=`badge ${estadoClass}`) #{admision.estado_admision}
           
-          form(action="/admisiones/actualizar/" + admision.id_admision, method="POST")
-            .card.mb-4
-              .card-header.fw-bold Detalles de la Admisión
-              .card-body
-                .mb-3
-                  label.form-label(for="motivo_internacion") Motivo de Internación
-                  textarea.form-control#motivo_internacion(name="motivo_internacion", placeholder="Describa el motivo de la internación", required, rows="3")= admision.motivo_internacion
-            
-            .card.mb-4
-              .card-header.fw-bold Reasignar Cama
-              .card-body
-                .row
-                  .col-md-6.mb-3.mb-md-0
-                    label.form-label Cama Actualmente Asignada
-                    p.form-control-plaintext
-                      if admision.asignacionesCama && admision.asignacionesCama.length > 0 && admision.asignacionesCama[0].cama
-                        | Hab: #{admision.asignacionesCama[0].cama.habitacion.numero} (Ala: #{admision.asignacionesCama[0].cama.habitacion.ala.nombre}) - Cama: #{admision.asignacionesCama[0].cama.numero}
-                      else
-                        strong.text-muted Ninguna
-                  .col-md-6
-                    label.form-label(for="id_cama_nueva") Cambiar a Cama (Solo disponibles)
-                    select.form-select#id_cama_nueva(name="id_cama_nueva")
-                      option(value="") -- No cambiar de cama --
-                      each cama in camasDisponibles
-                        option(value=cama.id_cama)= `Hab: ${cama.habitacion.numero} (Ala: ${cama.habitacion.ala.nombre}) - Cama: ${cama.numero} ${cama.genero_asignado ? '(Género: ' + (cama.genero_asignado === 'M' ? 'Masculino' : 'Femenino') + ')' : '(Mixto/Individual)'}`
-            
-            .d-flex.justify-content-end.gap-2
-              a.btn.btn-secondary(href="/admisiones/detalles/" + admision.id_admision) Cancelar
-              button.btn.btn-primary(type="submit") Actualizar Admisión
-=======
-  .max-w-5xl.mx-auto.bg-white.p-8.rounded-2xl.shadow-xl
-    .flex.justify-between.items-center.mb-6
-      h1.text-3xl.font-bold.text-blue-900 
-        i.fas.fa-user-injured.mr-2
-        |  Detalles de Admisión ##{admision.id_admision}
-      .flex.space-x-3
-        a(href=`/admisiones/editar/${admision.id_admision}`, class="bg-indigo-600 hover:bg-indigo-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md") Editar Admisión
-        if admision.estado_admision === 'Activa' || admision.estado_admision === 'En Proceso'
-          a(href=`/evaluaciones/nueva/${admision.id_admision}`, class="bg-purple-600 hover:bg-purple-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md") Registrar Evaluación
-          a(href=`/altas/nueva/${admision.id_admision}`, class="bg-yellow-600 hover:bg-yellow-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md") Dar Alta
-          form(action=`/admisiones/cancelar/${admision.id_admision}`, method="POST", onsubmit="return confirm('¿Está seguro de cancelar esta admisión?');", style="display:inline-block;")
-            button(type="submit", class="bg-red-600 hover:bg-red-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md") Cancelar
+          .card.mb-4
+            .card-header.fw-bold Detalles de la Admisión
+            .card-body
+              .mb-3
+                label.form-label(for="motivo_internacion") Motivo de Internación
+                textarea.form-control#motivo_internacion(name="motivo_internacion", placeholder="Describa el motivo de la internación", required, rows="3")= admision.motivo_internacion
 
-    div(class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8")
-      .bg-gray-50.p-6.rounded-lg.shadow-sm
-        h3.text-xl.font-semibold.text-gray-800.mb-4 Información de Admisión
-        p.mb-2 #[strong ID Admisión:] #{admision.id_admision}
-        p.mb-2 #[strong Fecha de Ingreso:] #{admision.fecha_ingreso ? new Date(admision.fecha_ingreso).toLocaleString('es-ES') : 'N/A'}
-        p.mb-2 #[strong Fecha de Alta:] #{admision.fecha_alta ? new Date(admision.fecha_alta).toLocaleString('es-ES') : 'Pendiente'}
-        p.mb-2 #[strong Motivo:] #{admision.motivo_internacion || 'N/A'}
-        p.mb-2 #[strong Tipo:] 
-          span(class=['font-medium', admision.es_emergencia ? 'text-red-600' : 'text-blue-600']) #{admision.es_emergencia ? 'Emergencia' : 'Normal'}
-        p.mb-2 #[strong Estado:] 
-          span(class=['px-2 inline-flex text-sm leading-5 font-semibold rounded-full', admision.estado_admision === 'Activa' ? 'bg-green-100 text-green-800' : admision.estado_admision === 'Dada de Alta' ? 'bg-blue-100 text-blue-800' : admision.estado_admision === 'Cancelada' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800']) #{admision.estado_admision}
-
-      .bg-gray-50.p-6.rounded-lg.shadow-sm
-        h3.text-xl.font-semibold.text-gray-800.mb-4 Información del Paciente
-        if admision.paciente
-          p.mb-2 #[strong Nombre:] #{admision.paciente.nombre} #{admision.paciente.apellido}
-          p.mb-2 #[strong DNI:] #{admision.paciente.dni}
-          p.mb-2 #[strong Género:] #{admision.paciente.genero}
-          p.mb-2 #[strong Fecha Nacimiento:] #{admision.paciente.fecha_nacimiento ? new Date(admision.paciente.fecha_nacimiento).toLocaleDateString('es-ES') : 'N/A'}
-          p.mb-2 #[strong Obra Social:] #{admision.paciente.obraSocial ? admision.paciente.obraSocial.nombre : 'N/A'}
-          p.mb-2 #[strong Teléfono:] #{admision.paciente.telefono || 'N/A'}
-          a(href=`/pacientes/editar/${admision.paciente.id_paciente}`, class="text-blue-600 hover:underline mt-2 inline-block") Editar Datos del Paciente
-        else
-          p.text-gray-700 Paciente no asignado o desconocido.
-
-    .bg-gray-50.p-6.rounded-lg.shadow-sm.mb-8
-      h3.text-xl.font-semibold.text-gray-800.mb-4 Cama Asignada Actualmente
-      if admision.asignacionesCama && admision.asignacionesCama.length > 0 && admision.asignacionesCama[0].cama
-        - const camaActual = admision.asignacionesCama[0].cama;
-        - const habitacionActual = camaActual.habitacion;
-        - const alaActual = habitacionActual.ala;
-        p.mb-2 #[strong Ala:] #{alaActual.nombre}
-        p.mb-2 #[strong Habitación:] #{habitacionActual.numero} (#{habitacionActual.tipo})
-        p.mb-2 #[strong Cama:] #{camaActual.numero} (Estado: #{camaActual.estado})
-        p.mb-2 #[strong Género Asignado a Cama:] #{camaActual.genero_asignado ? (camaActual.genero_asignado === 'M' ? 'Masculino' : 'Femenino') : 'Mixto/Individual'}
-        p.mb-2 #[strong Fecha de Asignación:] #{admision.asignacionesCama[0].fecha_asignacion ? new Date(admision.asignacionesCama[0].fecha_asignacion).toLocaleString('es-ES') : 'N/A'}
-      else
-        p.text-gray-700 No hay cama asignada actualmente para esta admisión.
-
-    .bg-white.p-6.rounded-lg.shadow-sm.mb-8
-      h3.text-xl.font-semibold.text-gray-800.mb-4 Historial de Evaluaciones
-      if admision.evaluaciones && admision.evaluaciones.length > 0
-        .overflow-x-auto
-          table.min-w-full.bg-white.rounded-lg.shadow-sm
-            thead.bg-gray-100.text-gray-700.uppercase.text-xs
-              tr
-                th.py-3.px-4.text-left.font-semibold Fecha
-                th.py-3.px-4.text-left.font-semibold Médico
-                th.py-3.px-4.text-left.font-semibold Diagnóstico
-                th.py-3.px-4.text-left.font-semibold Signos Vitales
-                th.py-3.px-4.text-left.font-semibold Plan de Cuidados
-            tbody.divide-y.divide-gray-200
-              each eval in admision.evaluaciones
-                tr(class="hover:bg-gray-50")
-                  td.py-3.px-4.text-sm #{eval.fecha_evaluacion ? new Date(eval.fecha_evaluacion).toLocaleDateString('es-ES') : 'N/A'}
-                  td.py-3.px-4.text-sm #{eval.medico ? eval.medico.nombre + ' ' + eval.medico.apellido : 'N/A'}
-                  td.py-3.px-4.text-sm #{eval.diagnostico || 'N/A'}
-                  td.py-3.px-4.text-sm
-                    if eval.signos_vitales
-                      ul.list-disc.list-inside
-                        if eval.signos_vitales.presion_arterial
-                          li PA: #{eval.signos_vitales.presion_arterial}
-                        if eval.signos_vitales.frecuencia_cardiaca
-                          li FC: #{eval.signos_vitales.frecuencia_cardiaca}
-                        if eval.signos_vitales.frecuencia_respiratoria
-                          li FR: #{eval.signos_vitales.frecuencia_respiratoria}
-                        if eval.signos_vitales.temperatura
-                          li Temp: #{eval.signos_vitales.temperatura}°C
+          .card.mb-4
+            .card-header.fw-bold Reasignar Cama
+            .card-body
+              .row
+                .col-md-6.mb-3.mb-md-0
+                  label.form-label Cama Actualmente Asignada
+                  p.form-control-plaintext
+                    if admision.asignacionesCama && admision.asignacionesCama.length > 0 && admision.asignacionesCama[0].cama
+                      | Hab: #{admision.asignacionesCama[0].cama.habitacion.numero} (Ala: #{admision.asignacionesCama[0].cama.habitacion.ala.nombre}) - Cama: #{admision.asignacionesCama[0].cama.numero}
                     else
-                      | N/A
-                  td.py-3.px-4.text-sm #{eval.plan_cuidados || 'N/A'}
-      else
-        p.text-gray-700 No hay evaluaciones registradas para esta admisión.
-
-    if admision.alta
-      .bg-green-50.p-6.rounded-lg.shadow-sm
-        h3.text-xl.font-semibold.text-green-800.mb-4 Información de Alta
-        p.mb-2 #[strong Fecha de Alta Real:] #{admision.alta.fecha_alta_real ? new Date(admision.alta.fecha_alta_real).toLocaleString('es-ES') : 'N/A'}
-        p.mb-2 #[strong Médico Responsable:] #{admision.alta.medico ? admision.alta.medico.nombre + ' ' + admision.alta.medico.apellido : 'N/A'}
-        p.mb-2 #[strong Diagnóstico Final:] #{admision.alta.diagnostico_final || 'N/A'}
-        p.mb-2 #[strong Tratamiento Indicado:] #{admision.alta.tratamiento_indicado || 'N/A'}
-        p.mb-2 #[strong Medicamentos Recetados:] #{admision.alta.medicamentos_recetados || 'N/A'}
-        p.mb-2 #[strong Fecha Control Sugerido:] #{admision.alta.fecha_control_sugerido ? new Date(admision.alta.fecha_control_sugerido).toLocaleDateString('es-ES') : 'N/A'}
-        p.mb-2 #[strong Observaciones de Alta:] #{admision.alta.observaciones_alta || 'N/A'}
-    else
-      .bg-gray-50.p-6.rounded-lg.shadow-sm
-        h3.text-xl.font-semibold.text-gray-800.mb-4 Estado de Alta
-        p.text-gray-700 El paciente aún no ha sido dado de alta.
-    
-    .mt-8.flex.justify-end
-      a(href="/admisiones", class="bg-gray-600 hover:bg-gray-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md") Volver a Admisiones
->>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0
+                      strong.text-muted Ninguna
+                .col-md-6
+                  label.form-label(for="id_cama_nueva") Cambiar a Cama (Solo disponibles)
+                  select.form-select#id_cama_nueva(name="id_cama_nueva")
+                    option(value="") -- No cambiar de cama --
+                    each cama in camasDisponibles
+                      option(value=cama.id_cama, selected=(cama.id_cama === admision.id_cama_asignada))= `Hab: ${cama.habitacion.numero} (Ala: ${cama.habitacion.ala.nombre}) - Cama: ${cama.numero} ${cama.genero_asignado ? '(Género: ' + (cama.genero_asignado === 'M' ? 'Masculino' : 'Femenino') + ')' : '(Mixto/Individual)'}`
+          
+          .d-flex.justify-content-end.gap-2
+            a.btn.btn-secondary(href="/admisiones/detalles/" + admision.id_admision) Cancelar
+            button.btn.btn-primary(type="submit") Actualizar Admisión

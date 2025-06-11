@@ -1,7 +1,6 @@
 extends layout
 
 block content
-<<<<<<< HEAD
   .container.mt-5
     .row.justify-content-center
       .col-md-8.col-lg-6
@@ -17,28 +16,10 @@ block content
                 | Mensaje: 
                 span.text-danger #{message || 'Algo salió mal en el servidor.'}
 
-            if error.stack && (process.env.NODE_ENV === 'development' || req.app.get('env') === 'development')
+            if error.stack && isDevelopment
               .bg-light.p-3.rounded.mb-4.text-start.small.font-monospace.overflow-auto(style='max-height: 200px;')
                 strong Stack Trace:
                 pre.mt-2 #{error.stack}
 
             .mt-4
               a(href="/").btn.btn-primary.btn-lg Volver al Inicio
-=======
-  .max-w-2xl.mx-auto.bg-white.mt-16.p-10.rounded-2xl.shadow-xl.text-center
-    h1.text-4xl.font-extrabold.text-red-700.mb-4 Oops! Ha ocurrido un error.
-    
-    .text-gray-700.text-lg.mb-6
-      p.font-bold.mb-2 Código de Error: 
-        span.text-red-600 #{status || '500'}
-      p.mb-4 Mensaje: 
-        span.text-red-600 #{message || 'Algo salió mal en el servidor.'}
-    
-    if error && error.stack && process.env.NODE_ENV === 'development'
-      .bg-gray-100.p-4.rounded-lg.text-sm.text-left.font-mono.whitespace-pre-wrap.break-words.max-h-60.overflow-auto.mb-6
-        strong Stack Trace:
-        pre.mt-2 #{error.stack}
-
-    .mt-8
-      a(href="/", class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-3 px-6 rounded-lg shadow-md") Volver al Inicio
->>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0

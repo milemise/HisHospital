@@ -1,105 +1,60 @@
 extends ../layout
 
 block content
-<<<<<<< HEAD
-  .card.shadow-sm.my-4
-    .card-header.py-3
-      .d-flex.justify-content-between.align-items-center
-        h1.h4.mb-0 Gestión de Admisiones
-        a.btn.btn-primary(href="/admisiones/nueva")
-          i.bi.bi-plus-lg.me-1
-          | Registrar Admisión
-    .card-body
-      if admisiones.length === 0
-        .alert.alert-info.mb-0 No hay admisiones registradas en el sistema.
-      else
-        .table-responsive
-          table.table.table-striped.table-hover.table-bordered.align-middle
-            thead.table-light
-              tr
-                th ID
-                th Paciente
-                th DNI
-                th Ingreso
-                th Alta
-                th Cama Actual
-                th Estado
-                th.text-center Acciones
-            tbody
-              each admision in admisiones
+  .container.mt-4
+    .card.shadow-lg.p-4
+      .card-header.bg-primary.text-white.py-3
+        .d-flex.justify-content-between.align-items-center
+          h1.h4.mb-0 Gestión de Admisiones
+          a.btn.btn-info.text-white(href="/admisiones/nueva")
+            i.fas.fa-plus.me-1
+            | Registrar Admisión
+      .card-body
+        if admisiones.length === 0
+          .alert.alert-info.mb-0 No hay admisiones registradas en el sistema.
+        else
+          .table-responsive
+            table.table.table-striped.table-hover.table-bordered.align-middle
+              thead.table-light
                 tr
-                  td #{admision.id_admision}
-                  td #{admision.paciente ? admision.paciente.nombre + ' ' + admision.paciente.apellido : 'Paciente Desconocido'}
-                  td #{admision.paciente ? admision.paciente.dni : 'N/A'}
-                  td #{admision.fecha_ingreso ? new Date(admision.fecha_ingreso).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}
-                  td #{admision.fecha_alta ? new Date(admision.fecha_alta).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Pendiente'}
-                  td
-                    if admision.asignacionesCama && admision.asignacionesCama.length > 0 && admision.asignacionesCama[0].cama
-                      | Hab: #{admision.asignacionesCama[0].cama.habitacion.numero} - Cama: #{admision.asignacionesCama[0].cama.numero}
-                    else
-                      span.text-muted Sin asignar
-                  td
-                    - const estadoClass = admision.estado_admision === 'Activa' ? 'bg-success' : admision.estado_admision === 'Dada de Alta' ? 'bg-primary' : admision.estado_admision === 'Cancelada' ? 'bg-danger' : 'bg-warning text-dark'
-                    span(class=`badge ${estadoClass}`) #{admision.estado_admision}
-                  td.text-center
-                    .btn-group
-                      a.btn.btn-sm.btn-outline-secondary(href="/admisiones/detalles/" + admision.id_admision, title="Ver Detalles")
-                        i.bi.bi-eye-fill
-                      button.btn.btn-sm.btn-outline-secondary.dropdown-toggle.dropdown-toggle-split(type="button", data-bs-toggle="dropdown", aria-expanded="false")
-                        span.visually-hidden Toggle Dropdown
-                      ul.dropdown-menu
-                        if admision.estado_admision === 'Activa' || admision.estado_admision === 'En Proceso'
-                          li: a.dropdown-item(href="/admisiones/editar/" + admision.id_admision) Editar
-                          li: a.dropdown-item(href="/evaluaciones/nueva/" + admision.id_admision) Evaluar
-                          li: a.dropdown-item(href="/altas/nueva/" + admision.id_admision) Dar Alta
-                          li: hr.dropdown-divider
-                          li
-                            form(action="/admisiones/cancelar/" + admision.id_admision, method="POST", onsubmit="return confirm('¿Está seguro de cancelar esta admisión?');")
-                              button.dropdown-item.text-danger(type="submit") Cancelar
-                        else
-                          li: span.dropdown-item.disabled.text-muted Sin acciones
-=======
-  .max-w-7xl.mx-auto.bg-white.p-8.rounded-2xl.shadow-xl
-    .flex.justify-between.items-center.mb-6
-      h1.text-3xl.font-bold.text-blue-900 Gestión de Admisiones
-      a(href="/admisiones/nueva", class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md") Registrar Admisión
-
-    if admisiones.length === 0
-      p.text-gray-600.mt-4 No hay admisiones registradas en el sistema.
-    else
-      .overflow-x-auto.mt-6
-        table.min-w-full.bg-white.border.border-gray-200.rounded-lg.shadow-sm
-          thead.bg-blue-100.text-gray-700.uppercase.text-sm
-            tr
-              th.py-3.px-4.text-left.font-semibold ID
-              th.py-3.px-4.text-left.font-semibold Paciente
-              th.py-3.px-4.text-left.font-semibold DNI
-              th.py-3.px-4.text-left.font-semibold Ingreso
-              th.py-3.px-4.text-left.font-semibold Alta
-              th.py-3.px-4.text-left.font-semibold Cama Actual
-              th.py-3.px-4.text-left.font-semibold Estado
-              th.py-3.px-4.text-center.font-semibold Acciones
-          tbody.divide-y.divide-gray-200
-            each admision in admisiones
-              tr(class="hover:bg-gray-50 transition-colors duration-100")
-                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-800 #{admision.id_admision}
-                td.py-3.px-4.whitespace-nowrap.text-sm.font-medium.text-gray-900 #{admision.paciente ? admision.paciente.nombre + ' ' + admision.paciente.apellido : 'Paciente Desconocido'}
-                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{admision.paciente ? admision.paciente.dni : 'N/A'}
-                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{admision.fecha_ingreso ? new Date(admision.fecha_ingreso).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}
-                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{admision.fecha_alta ? new Date(admision.fecha_alta).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Pendiente'}
-                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700
-                  if admision.asignacionesCama && admision.asignacionesCama.length > 0 && admision.asignacionesCama[0].cama
-                    | Hab: #{admision.asignacionesCama[0].cama.habitacion.numero} - Cama: #{admision.asignacionesCama[0].cama.numero}
-                  else
-                    | Sin asignar
-                td.py-3.px-4.whitespace-nowrap.text-sm.font-semibold
-                  span(class=['px-2', 'inline-flex', 'text-xs', 'leading-5', 'font-semibold', 'rounded-full', admision.estado_admision === 'Activa' ? 'bg-green-100 text-green-800' : admision.estado_admision === 'Dada de Alta' ? 'bg-blue-100 text-blue-800' : admision.estado_admision === 'Cancelada' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800']) #{admision.estado_admision}
-                td.py-3.px-4.whitespace-nowrap.text-sm.flex.space-x-2.justify-center
-                  a(href=`/admisiones/detalles/${admision.id_admision}`, class="text-blue-600 hover:text-blue-800 font-medium transition-colors") Ver
-                  if admision.estado_admision === 'Activa' || admision.estado_admision === 'En Proceso'
-                    a(href=`/admisiones/editar/${admision.id_admision}`, class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors") Editar
-                    a(href=`/evaluaciones/nueva/${admision.id_admision}`, class="text-purple-600 hover:text-purple-800 font-medium transition-colors") Evaluar
-                    a(href=`/altas/nueva/${admision.id_admision}`, class="text-yellow-600 hover:text-yellow-800 font-medium transition-colors") Alta
-                    form(action=`/admisiones/cancelar/${admision.id_admision}`, method="POST", onsubmit="return confirm('¿Está seguro de cancelar esta admisión?');", style="display:inline-block;")
-                      button(type="submit", class="text-red-600 hover:text-red-800 font-medium transition-colors") Cancelar
->>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0
+                  th ID
+                  th Paciente
+                  th DNI
+                  th Ingreso
+                  th Alta
+                  th Cama Actual
+                  th Estado
+                  th.text-center Acciones
+              tbody
+                each admision in admisiones
+                  tr
+                    td #{admision.id_admision}
+                    td #{admision.paciente ? admision.paciente.nombre + ' ' + admision.paciente.apellido : 'Paciente Desconocido'}
+                    td #{admision.paciente ? admision.paciente.dni : 'N/A'}
+                    td #{admision.fecha_ingreso ? new Date(admision.fecha_ingreso).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}
+                    td #{admision.fecha_alta ? new Date(admision.fecha_alta).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Pendiente'}
+                    td
+                      if admision.asignacionesCama && admision.asignacionesCama.length > 0 && admision.asignacionesCama[0].cama
+                        | Hab: #{admision.asignacionesCama[0].cama.habitacion.numero} - Cama: #{admision.asignacionesCama[0].cama.numero}
+                      else
+                        span.text-muted Sin asignar
+                    td
+                      - const estadoClass = admision.estado === 'Activo' ? 'bg-success' : admision.estado === 'Dada de Alta' ? 'bg-primary' : admision.estado === 'Cancelada' ? 'bg-danger' : 'bg-warning text-dark'
+                      span(class=`badge ${estadoClass}`) #{admision.estado}
+                    td.text-center
+                      .btn-group
+                        a.btn.btn-sm.btn-outline-secondary(href="/admisiones/detalles/" + admision.id_admision, title="Ver Detalles")
+                          i.fas.fa-eye
+                        button.btn.btn-sm.btn-outline-secondary.dropdown-toggle.dropdown-toggle-split(type="button", data-bs-toggle="dropdown", aria-expanded="false")
+                          span.visually-hidden Toggle Dropdown
+                        ul.dropdown-menu
+                          if admision.estado === 'Activo' || admision.estado === 'En Proceso'
+                            li: a.dropdown-item(href="/admisiones/editar/" + admision.id_admision) Editar
+                            li: a.dropdown-item(href="/evaluaciones/nueva/" + admision.id_admision) Evaluar
+                            li: a.dropdown-item(href="/altas/nueva/" + admision.id_admision) Dar Alta
+                            li: hr.dropdown-divider
+                            li
+                              form(action="/admisiones/cancelar/" + admision.id_admision, method="POST", onsubmit="return confirm('¿Está seguro de cancelar esta admisión?');")
+                                button.dropdown-item.text-danger(type="submit") Cancelar
+                          else
+                            li: span.dropdown-item.disabled.text-muted Sin acciones

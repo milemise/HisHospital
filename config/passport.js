@@ -13,7 +13,7 @@ passport.use(new LocalStrategy({
       const user = await Usuario.findOne({ where: { email: email } });
       
       console.log('Objeto de usuario recuperado de DB:', user);
-
+    
       if (user) {
         console.log('Propiedad user.password_hash:', user.password_hash);
         console.log('Tipo de user.password_hash:', typeof user.password_hash);

@@ -1,70 +1,122 @@
-<<<<<<< HEAD
-const { Router } = require('express');
-const router = Router();
-
-router.get('/', (req, res) => {
-  res.json({ message: 'Obteniendo todos los usuarios' });
-});
-
-router.get('/:id', (req, res) => {
-  const { id } = req.params;
-  res.json({ message: `Obteniendo el usuario con ID: ${id}` });
-});
-
-router.post('/', (req, res) => {
-  const userData = req.body;
-  res.status(201).json({ 
-    message: 'Usuario creado exitosamente',
-    data: userData
-  });
-});
-
-router.put('/:id', (req, res) => {
-  const { id } = req.params;
-  const updatedData = req.body;
-  res.json({ 
-    message: `Actualizando el usuario con ID: ${id}`,
-    data: updatedData
-  });
-});
-
-router.delete('/:id', (req, res) => {
-  const { id } = req.params;
-  res.json({ message: `Eliminando el usuario con ID: ${id}` });
-});
-=======
-// routes/usuarios.js
 const express = require('express');
 const router = express.Router();
-const usuarioController = require('../controllers/usuarioController'); // Asegúrate de que este controlador exista y sea correcto
+console.log('✅ routes/usuarios.js cargado y router inicializado.');
+const { Usuario } = require('../models'); 
+const bcrypt = require('bcryptjs'); 
 
-// Importa los middlewares de autenticación y autorización desde tu archivo centralizado
-// Asegúrate de que este archivo exista en 'middlewares/authMiddleware.js'
-const { isAuthenticated, isAdmin } = require('../middlewares/authMiddleware');
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated && req.isAuthenticated()) {
+        return next();
+    }
+    req.flash('error', 'Por favor, inicia sesión para acceder a esta página.');
+    res.redirect('/auth/login');
+}
 
-// Aplica los middlewares de protección a todas las rutas de gestión de usuarios
-// Típicamente, solo los administradores tienen acceso completo a la gestión de usuarios
-router.use(isAuthenticated); // Requiere que el usuario esté logeado
-router.use(isAdmin);         // Requiere que el usuario logeado tenga el rol 'admin'
+// Ruta para listar todos los usuarios
+router.get('/', ensureAuthenticated, async (req, res) => {
+    try {
+        const usuarios = await Usuario.findAll(); 
+        res.render('usuarios/index', { title: 'Gestión de Usuarios', usuarios: usuarios });
+    } catch (error) {
+        console.error('Error al listar usuarios:', error);
+        req.flash('error', 'No se pudieron cargar los usuarios.');
+        res.redirect('/error'); 
+    }
+});
 
-// Rutas para la gestión de usuarios (CRUD)
-// GET /usuarios - Muestra la lista de todos los usuarios
-router.get('/', usuarioController.listarUsuarios);
+// Ruta para mostrar el formulario de crear nuevo usuario
+router.get('/nuevo', ensureAuthenticated, (req, res) => {
+    res.render('usuarios/nuevo', { title: 'Crear Nuevo Usuario' });
+});
 
-// GET /usuarios/nuevo - Muestra el formulario para crear un nuevo usuario
-router.get('/nuevo', usuarioController.formularioNueva);
+// Ruta para procesar la creación de un nuevo usuario
+router.post('/', ensureAuthenticated, async (req, res) => {
+    const { nombre_usuario, email, password, rol } = req.body;
+    try {
+        const existingUser = await Usuario.findOne({ where: { email: email } });
+        if (existingUser) {
+            req.flash('error', 'El email ya está registrado.');
+            return res.redirect('/usuarios/nuevo');
+        }
 
-// POST /usuarios - Guarda un nuevo usuario enviado desde el formulario
-router.post('/', usuarioController.guardarUsuario);
+        const hashedPassword = await bcrypt.hash(password, 10); // Hashear la contraseña
+        await Usuario.create({
+            nombre_usuario,
+            email,
+            password_hash: hashedPassword, 
+            rol
+        });
+        req.flash('success', 'Usuario creado exitosamente.');
+        res.redirect('/usuarios'); // Redirigir a la lista de usuarios
+    } catch (error) {
+        console.error('Error al crear usuario:', error);
+        req.flash('error', 'Error al crear usuario. Verifique los datos.');
+        res.redirect('/usuarios/nuevo');
+    }
+});
 
-// GET /usuarios/editar/:id - Muestra el formulario para editar un usuario específico
-router.get('/editar/:id', usuarioController.formularioEditar);
+// Ruta para mostrar el formulario de edición de un usuario
+router.get('/editar/:id', ensureAuthenticated, async (req, res) => {
+    try {
+        const usuario = await Usuario.findByPk(req.params.id);
+        if (!usuario) {
+            req.flash('error', 'Usuario no encontrado.');
+            return res.redirect('/usuarios');
+        }
+        res.render('usuarios/editar', { title: 'Editar Usuario', usuario: usuario });
+    } catch (error) {
+        console.error('Error al cargar usuario para edición:', error);
+        req.flash('error', 'No se pudo cargar el usuario para edición.');
+        res.redirect('/usuarios');
+    }
+});
 
-// POST /usuarios/actualizar/:id - Actualiza un usuario específico
-router.post('/actualizar/:id', usuarioController.actualizarUsuario);
+// Ruta para procesar la actualización de un usuario
+router.post('/actualizar/:id', ensureAuthenticated, async (req, res) => {
+    const { nombre_usuario, email, rol, password } = req.body; 
+    try {
+        const usuario = await Usuario.findByPk(req.params.id);
+        if (!usuario) {
+            req.flash('error', 'Usuario no encontrado para actualizar.');
+            return res.redirect('/usuarios');
+        }
 
-// POST /usuarios/eliminar/:id - Elimina un usuario específico
-router.post('/eliminar/:id', usuarioController.eliminarUsuario);
->>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0
+        // Actualizar datos del usuario
+        usuario.nombre_usuario = nombre_usuario;
+        usuario.email = email;
+        usuario.rol = rol;
+        // Si se proporciona una nueva contraseña, hashearla y actualizarla
+        if (password) {
+            usuario.password_hash = await bcrypt.hash(password, 10);
+        }
+
+        await usuario.save(); // Guardar los cambios
+        req.flash('success', 'Usuario actualizado exitosamente.');
+        res.redirect('/usuarios');
+    } catch (error) {
+        console.error('Error al actualizar usuario:', error);
+        req.flash('error', 'Error al actualizar usuario. Verifique los datos.');
+        res.redirect(`/usuarios/editar/${req.params.id}`);
+    }
+});
+
+// Ruta para procesar la eliminación de un usuario
+router.post('/eliminar/:id', ensureAuthenticated, async (req, res) => {
+    try {
+        const usuario = await Usuario.findByPk(req.params.id);
+        if (!usuario) {
+            req.flash('error', 'Usuario no encontrado para eliminar.');
+            return res.redirect('/usuarios');
+        }
+        await usuario.destroy(); // Eliminar el usuario
+        req.flash('success', 'Usuario eliminado exitosamente.');
+        res.redirect('/usuarios');
+    } catch (error) {
+        console.error('Error al eliminar usuario:', error);
+        req.flash('error', 'Error al eliminar usuario.');
+        res.redirect('/usuarios');
+    }
+});
+
 
 module.exports = router;

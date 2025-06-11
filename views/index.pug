@@ -1,7 +1,6 @@
 extends ../layout
 
 block content
-<<<<<<< HEAD
   .container.mt-4
     .card.shadow-lg.p-4
       .d-flex.justify-content-between.align-items-center.mb-4
@@ -11,16 +10,6 @@ block content
         a(href="/pacientes/nuevo").btn.btn-info.text-white.shadow-sm
           i.fas.fa-plus.me-2
           | Nuevo Paciente
-=======
-  .max-w-7xl.mx-auto.mt-6.bg-white.p-6.rounded-2xl.shadow-lg
-    .flex.justify-between.items-center.mb-6
-      h1.text-3xl.font-bold.text-blue-900
-        i.fas.fa-user-injured.mr-2
-        |  Pacientes y sus Admisiones
-      a(href="/pacientes/nuevo", class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md flex items-center")
-        i.fas.fa-plus.mr-2
-        |  Nuevo Paciente
->>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0
 
       .table-responsive
         table.table.table-hover.table-striped.table-bordered.shadow-sm.rounded
@@ -35,21 +24,20 @@ block content
               th Habitación
               th Acciones
 
-<<<<<<< HEAD
           tbody
             each paciente in pacientes
               tr
                 td.fw-medium #{paciente.nombre} #{paciente.apellido}
                 td #{paciente.fecha_nacimiento.toLocaleDateString()}
                 td
-                  span.badge.rounded-pill(class=paciente.sexo === 'M' ? 'bg-primary' : 'bg-danger')
+                  span.badge.rounded-pill(class=(paciente.sexo === 'M' ? 'bg-primary' : 'bg-danger'))
                     | #{paciente.sexo === 'M' ? 'Masculino' : 'Femenino'}
                 td.font-monospace #{paciente.dni}
                 td #{paciente.ultima_admision?.fecha ? paciente.ultima_admision.fecha.toLocaleDateString() : 'N/A'}
                 td
-                  span.badge.rounded-pill(class=paciente.ultima_admision?.estado === 'Activo' ? 'bg-success' : 'bg-secondary')
+                  span.badge.rounded-pill(class=(paciente.ultima_admision?.estado === 'Activo' ? 'bg-success' : 'bg-secondary'))
                     | #{paciente.ultima_admision?.estado || 'Sin internar'}
-                td.fw-medium #{paciente.ultima_admision?.habitacion || '—'}
+                td.font-medium #{paciente.ultima_admision?.habitacion || '—'}
                 td
                   .btn-group.btn-group-sm(role='group')
                     a(href=`/pacientes/${paciente.id}`).btn.btn-outline-primary(title="Ver Detalle")
@@ -62,31 +50,3 @@ block content
 block scripts
   script.
     document.addEventListener('DOMContentLoaded', function() {});
-=======
-        tbody
-          each paciente in pacientes
-            tr(class="border-b border-gray-100 hover:bg-blue-50")
-              td.p-3.font-medium #{paciente.nombre} #{paciente.apellido}
-              td.p-3 #{paciente.fecha_nacimiento ? paciente.fecha_nacimiento.toLocaleDateString() : 'N/A'}
-              td.p-3
-                span(class=['px-2 py-1 rounded-full text-xs', paciente.sexo === 'M' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800'])
-                  | #{paciente.sexo === 'M' ? 'Masculino' : 'Femenino'}
-              td.p-3.font-mono #{paciente.dni}
-              td.p-3 #{paciente.ultima_admision?.fecha ? paciente.ultima_admision.fecha.toLocaleDateString() : 'N/A'}
-              td.p-3
-                span(class=['px-2 py-1 rounded-full text-xs', paciente.ultima_admision?.estado === 'Activo' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'])
-                  | #{paciente.ultima_admision?.estado || 'Sin internar'}
-              td.p-3.font-medium #{paciente.ultima_admision?.habitacion || '—'}
-              td.p-3.flex.space-x-2
-                a(href=`/pacientes/${paciente.id}`, class="text-blue-600 hover:text-blue-800", title="Ver Detalle")
-                  i.fas.fa-eye
-                a(href=`/pacientes/editar/${paciente.id}`, class="text-yellow-600 hover:text-yellow-800", title="Editar")
-                  i.fas.fa-edit
-                a(href=`/admisiones/nueva/${paciente.id}`, class="text-teal-600 hover:text-teal-800", title="Nueva Admisión")
-                  i.fas.fa-procedures
-
-block scripts
-  script.
-    document.addEventListener('DOMContentLoaded', function() {
-    });
->>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0

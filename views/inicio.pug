@@ -1,7 +1,6 @@
 extends layout
 
 block content
-<<<<<<< HEAD
   .container.mt-5
     .card.shadow-lg.p-5.text-center
       h1.card-title.display-4.text-primary.fw-bold.mb-4 Gestión Hospitalaria Simplificada
@@ -28,28 +27,3 @@ block content
         else
           p Por favor, inicia sesión para acceder a todas las funcionalidades del sistema.
           a(href="/auth/login").text-primary.text-decoration-none.fw-medium.mt-2.d-inline-block Iniciar Sesión aquí
-=======
-  .max-w-4xl.mx-auto.bg-white.p-10.rounded-2xl.shadow-xl.text-center
-    h1.text-4xl.font-extrabold.text-blue-900.mb-6 Gestión Hospitalaria Simplificada
-    p.text-lg.text-gray-700.leading-relaxed.mb-8
-      | Optimiza la administración de internaciones, pacientes, médicos y recursos con nuestra plataforma intuitiva.
-      | Mejora la eficiencia y la calidad de atención en tu hospital.
-    
-    div(class="grid grid-cols-1 md:grid-cols-2 gap-6")
-      a(href="/admisiones/nueva", class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-4 px-6 rounded-lg shadow-md flex items-center justify-center text-lg")
-        span Registrar Nueva Admisión
-      a(href="/pacientes/nuevo", class="bg-green-600 hover:bg-green-700 transition-colors duration-300 text-white font-semibold py-4 px-6 rounded-lg shadow-md flex items-center justify-center text-lg")
-        span Registrar Nuevo Paciente
-    
-    .mt-12.text-gray-600.text-base
-      if isAuthenticated && user
-        p.mb-2 
-          | Has iniciado sesión como: 
-          span.font-semibold.text-blue-800 #{user.nombre_usuario || user.nombre || user.email.split('@')[0]}
-          |  con rol: 
-          span.font-semibold.text-blue-800 #{user.rol}.
-        p Explora las opciones del menú superior para empezar.
-      else
-        p Por favor, inicia sesión para acceder a todas las funcionalidades del sistema.
-        a(href="/auth/login", class="text-blue-600 hover:underline font-medium mt-2 inline-block") Iniciar Sesión aquí
->>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0

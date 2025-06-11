@@ -1,11 +1,10 @@
 extends ../layout
 
 block content
-<<<<<<< HEAD
   .row.justify-content-center
     .col-md-8.col-lg-7
       .card.shadow-sm.my-5
-        .card-header
+        .card-header.bg-primary.text-white.py-3
           h1.h4.mb-0 Registrar Nuevo Médico
         form(action="/medicos", method="POST")
           .card-body.p-4
@@ -34,34 +33,3 @@ block content
           .card-footer.text-end.bg-light
             a.btn.btn-secondary(href="/medicos") Cancelar
             button.btn.btn-primary.ms-2(type="submit") Guardar Médico
-=======
-  .max-w-md.mx-auto.bg-white.mt-10.p-8.rounded-2xl.shadow-xl
-    h1.text-3xl.font-bold.text-blue-900.mb-6 Registrar Nuevo Médico
-
-    form(action="/medicos", method="POST", class="space-y-6")
-      div
-        label(for="nombre", class="block text-sm font-medium text-gray-700") Nombre
-        input(type="text", name="nombre", id="nombre", placeholder="Nombre del médico", required, class="w-full mt-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-      div
-        label(for="apellido", class="block text-sm font-medium text-gray-700") Apellido
-        input(type="text", name="apellido", id="apellido", placeholder="Apellido del médico", required, class="w-full mt-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-      div
-        label(for="id_especialidad", class="block text-sm font-medium text-gray-700") Especialidad
-        select(name="id_especialidad", id="id_especialidad", required, class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-          option(value="") Seleccionar Especialidad
-          each esp in especialidades
-            option(value=esp.id_especialidad)= esp.nombre
-      div
-        label(for="matricula", class="block text-sm font-medium text-gray-700") Matrícula
-        input(type="text", name="matricula", id="matricula", placeholder="Matrícula profesional", required, class="w-full mt-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-      div
-        label(for="telefono", class="block text-sm font-medium text-gray-700") Teléfono (Opcional)
-        input(type="text", name="telefono", id="telefono", placeholder="Número de teléfono", class="w-full mt-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-      div
-        label(for="email", class="block text-sm font-medium text-gray-700") Email
-        input(type="email", name="email", id="email", placeholder="Correo electrónico", required, class="w-full mt-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500")
-      
-      .flex.justify-end.space-x-4.pt-4
-        a(href="/medicos", class="bg-gray-600 hover:bg-gray-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md") Cancelar
-        button(type="submit", class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-2 px-6 rounded-md shadow-md") Guardar Médico
->>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0

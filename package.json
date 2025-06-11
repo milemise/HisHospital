@@ -6,13 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-<<<<<<< HEAD
     "test": "jest"
-=======
-    "watch-css": "tailwindcss -i ./public/css/tailwind.css -o ./public/css/style.css --watch",
-    "tailwind:build": "tailwindcss -i ./public/css/tailwind.css -o ./public/css/style.css --minify",
-    "tailwind:watch": "tailwindcss -i ./public/css/tailwind.css -o ./public/css/style.css --watch"
->>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0
   },
   "keywords": [
     "HIS",
@@ -21,11 +15,7 @@
     "Express",
     "Sequelize",
     "Pug",
-<<<<<<< HEAD
     "Bootstrap"
-=======
-    "Tailwind"
->>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0
   ],
   "author": "Mile",
   "license": "ISC",
@@ -40,7 +30,6 @@
     "helmet": "^8.1.0",
     "mysql2": "^3.14.1",
     "passport": "^0.7.0",
-    "passport-github2": "^0.1.12",
     "passport-local": "^1.0.0",
     "pug": "^3.0.3",
     "sequelize": "^6.37.7"
@@ -48,14 +37,6 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "nodemon": "^3.1.10",
-<<<<<<< HEAD
     "sequelize-cli": "^6.6.3"
   }
 }
-=======
-    "postcss": "^8.5.4",
-    "sequelize-cli": "^6.6.3",
-    "tailwindcss": "^4.1.8"
-  }
-}
->>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0

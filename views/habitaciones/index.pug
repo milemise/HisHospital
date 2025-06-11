@@ -1,77 +1,42 @@
 extends ../layout
 
 block content
-<<<<<<< HEAD
-  .card.shadow-sm.my-4
-    .card-header.py-3
-      .d-flex.justify-content-between.align-items-center
-        h1.h4.mb-0 Gestión de Habitaciones
-        a.btn.btn-primary(href="/habitaciones/nuevo")
-          i.bi.bi-plus-lg.me-1
-          | Nueva Habitación
-    .card-body
-      if habitaciones.length === 0
-        .alert.alert-info.mb-0 No hay habitaciones registradas en el sistema.
-      else
-        .table-responsive
-          table.table.table-striped.table-hover.align-middle
-            thead.table-light
-              tr
-                th ID
-                th Número
-                th Tipo
-                th Estado
-                th Ala
-                th Camas
-                th.text-center Acciones
-            tbody
-              each habitacion in habitaciones
+  .container.mt-4
+    .card.shadow-lg.p-4
+      .card-header.bg-primary.text-white.py-3
+        .d-flex.justify-content-between.align-items-center
+          h1.h4.mb-0 Gestión de Habitaciones
+          a.btn.btn-info.text-white(href="/habitaciones/nuevo")
+            i.fas.fa-plus-lg.me-1
+            | Nueva Habitación
+      .card-body
+        if habitaciones.length === 0
+          .alert.alert-info.mb-0 No hay habitaciones registradas en el sistema.
+        else
+          .table-responsive
+            table.table.table-striped.table-hover.align-middle.table-bordered
+              thead.table-light
                 tr
-                  td #{habitacion.id_habitacion}
-                  td #{habitacion.numero}
-                  td #{habitacion.tipo}
-                  td
-                    - const estadoClass = habitacion.estado === 'Disponible' ? 'bg-success' : habitacion.estado === 'Ocupada' ? 'bg-danger' : 'bg-warning text-dark'
-                    span(class=`badge ${estadoClass}`) #{habitacion.estado}
-                  td #{habitacion.ala ? habitacion.ala.nombre : 'N/A'}
-                  td #{habitacion.camas ? habitacion.camas.length : 0}
-                  td.text-center
-                    .d-inline-flex.gap-2
-                      a.btn.btn-sm.btn-outline-primary(href="/habitaciones/editar/" + habitacion.id_habitacion) Editar
-                      form(action="/habitaciones/eliminar/" + habitacion.id_habitacion, method="POST", onsubmit="return confirm('¿Está seguro de eliminar esta habitación? Esto eliminará todas sus camas si no tienen admisiones activas.');")
-                        button.btn.btn-sm.btn-outline-danger(type="submit") Eliminar
-=======
-  .max-w-7xl.mx-auto.bg-white.p-8.rounded-2xl.shadow-xl
-    .flex.justify-between.items-center.mb-6
-      h1.text-3xl.font-bold.text-blue-900 Gestión de Habitaciones
-      a(href="/habitaciones/nuevo", class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md") Nueva Habitación
-
-    if habitaciones.length === 0
-      p.text-gray-600.mt-4 No hay habitaciones registradas en el sistema.
-    else
-      .overflow-x-auto.mt-6
-        table.min-w-full.bg-white.border.border-gray-200.rounded-lg.shadow-sm
-          thead.bg-blue-100.text-gray-700.uppercase.text-sm
-            tr
-              th.py-3.px-4.text-left.font-semibold ID
-              th.py-3.px-4.text-left.font-semibold Número
-              th.py-3.px-4.text-left.font-semibold Tipo
-              th.py-3.px-4.text-left.font-semibold Estado
-              th.py-3.px-4.text-left.font-semibold Ala
-              th.py-3.px-4.text-left.font-semibold Camas
-              th.py-3.px-4.text-center.font-semibold Acciones
-          tbody.divide-y.divide-gray-200
-            each habitacion in habitaciones
-              tr(class="hover:bg-gray-50 transition-colors duration-100")
-                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-800 #{habitacion.id_habitacion}
-                td.py-3.px-4.whitespace-nowrap.text-sm.font-medium.text-gray-900 #{habitacion.numero}
-                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{habitacion.tipo}
-                td.py-3.px-4.whitespace-nowrap.text-sm.font-semibold
-                  span(class=['px-2', 'inline-flex', 'text-xs', 'leading-5', 'font-semibold', 'rounded-full', habitacion.estado === 'Disponible' ? 'bg-green-100 text-green-800' : habitacion.estado === 'Ocupada' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800']) #{habitacion.estado}
-                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{habitacion.ala ? habitacion.ala.nombre : 'N/A'}
-                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{habitacion.camas ? habitacion.camas.length : 0}
-                td.py-3.px-4.whitespace-nowrap.text-sm.flex.space-x-2.justify-center
-                  a(href=`/habitaciones/editar/${habitacion.id_habitacion}`, class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors") Editar
-                  form(action=`/habitaciones/eliminar/${habitacion.id_habitacion}`, method="POST", onsubmit="return confirm('¿Está seguro de eliminar esta habitación? Esto eliminará todas sus camas si no tienen admisiones activas.');", style="display:inline-block;")
-                    button(type="submit", class="text-red-600 hover:text-red-800 font-medium transition-colors") Eliminar
->>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0
+                  th ID
+                  th Número
+                  th Tipo
+                  th Estado
+                  th Ala
+                  th Camas
+                  th.text-center Acciones
+              tbody
+                each habitacion in habitaciones
+                  tr
+                    td #{habitacion.id_habitacion}
+                    td #{habitacion.numero}
+                    td #{habitacion.tipo}
+                    td
+                      - const estadoClass = habitacion.estado === 'Disponible' ? 'bg-success' : habitacion.estado === 'Ocupada' ? 'bg-danger' : 'bg-warning text-dark'
+                      span(class=`badge ${estadoClass}`) #{habitacion.estado}
+                    td #{habitacion.ala ? habitacion.ala.nombre : 'N/A'}
+                    td #{habitacion.camas ? habitacion.camas.length : 0}
+                    td.text-center
+                      .d-inline-flex.gap-2
+                        a.btn.btn-sm.btn-outline-primary(href="/habitaciones/editar/" + habitacion.id_habitacion) Editar
+                        form(action="/habitaciones/eliminar/" + habitacion.id_habitacion, method="POST", onsubmit="return confirm('¿Está seguro de eliminar esta habitación? Esto eliminará todas sus camas si no tienen admisiones activas.');")
+                          button.btn.btn-sm.btn-outline-danger(type="submit") Eliminar

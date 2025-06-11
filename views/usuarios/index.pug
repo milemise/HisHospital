@@ -1,7 +1,6 @@
 extends ../layout
 
 block content
-<<<<<<< HEAD
   .container.mt-4
     .card.shadow-lg.p-4
       .d-flex.justify-content-between.align-items-center.mb-4
@@ -29,41 +28,8 @@ block content
                   td #{usuario.email}
                   td
                     span.badge.rounded-pill(class=(usuario.rol === 'admin' ? 'bg-danger' : usuario.rol === 'medico' ? 'bg-primary' : usuario.rol === 'enfermero' ? 'bg-success' : 'bg-warning text-dark')) #{usuario.rol}
-                  td #{usuario.created_at ? new Date(usuario.created_at).toLocaleDateString('es-ES') : 'N/A'}
+                  td #{usuario.createdAt ? new Date(usuario.createdAt).toLocaleDateString('es-ES') : 'N/A'}
                   td.text-center
                     a(href="/usuarios/editar/" + usuario.id_usuario).btn.btn-sm.btn-outline-info.me-2 Editar
                     form(action="/usuarios/eliminar/" + usuario.id_usuario, method="POST", onsubmit="return confirm('¿Está seguro de eliminar a este usuario?');", style="display:inline-block;")
                       button(type="submit").btn.btn-sm.btn-outline-danger Eliminar
-=======
-  .max-w-5xl.mx-auto.bg-white.p-8.rounded-2xl.shadow-xl
-    .flex.justify-between.items-center.mb-6
-      h1.text-3xl.font-bold.text-blue-900 Gestión de Usuarios
-      a(href="/usuarios/nuevo", class="bg-blue-600 hover:bg-blue-700 transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md") Nuevo Usuario
-
-    if usuarios.length === 0
-      p.text-gray-600.mt-4 No hay usuarios registrados en el sistema.
-    else
-      .overflow-x-auto.mt-6
-        table.min-w-full.bg-white.border.border-gray-200.rounded-lg.shadow-sm
-          thead.bg-blue-100.text-gray-700.uppercase.text-sm
-            tr
-              th.py-3.px-4.text-left.font-semibold ID
-              th.py-3.px-4.text-left.font-semibold Nombre de Usuario
-              th.py-3.px-4.text-left.font-semibold Email
-              th.py-3.px-4.text-left.font-semibold Rol
-              th.py-3.px-4.text-left.font-semibold Creado
-              th.py-3.px-4.text-center.font-semibold Acciones
-          tbody.divide-y.divide-gray-200
-            each usuario in usuarios
-              tr(class="hover:bg-gray-50 transition-colors duration-100")
-                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-800 #{usuario.id_usuario}
-                td.py-3.px-4.whitespace-nowrap.text-sm.font-medium.text-gray-900 #{usuario.nombre_usuario}
-                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{usuario.email}
-                td.py-3.px-4.whitespace-nowrap.text-sm.font-semibold
-                  span(class=['px-2', 'inline-flex', 'text-xs', 'leading-5', 'font-semibold', 'rounded-full', usuario.rol === 'admin' ? 'bg-red-100 text-red-800' : usuario.rol === 'medico' ? 'bg-blue-100 text-blue-800' : usuario.rol === 'enfermero' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800']) #{usuario.rol}
-                td.py-3.px-4.whitespace-nowrap.text-sm.text-gray-700 #{usuario.createdAt ? new Date(usuario.createdAt).toLocaleDateString('es-ES') : 'N/A'}
-                td.py-3.px-4.whitespace-nowrap.text-sm.flex.space-x-2.justify-center
-                  a(href=`/usuarios/editar/${usuario.id_usuario}`, class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors") Editar
-                  form(action=`/usuarios/eliminar/${usuario.id_usuario}`, method="POST", onsubmit="return confirm('¿Está seguro de eliminar a este usuario?');", style="display:inline-block;")
-                    button(type="submit", class="text-red-600 hover:text-red-800 font-medium transition-colors") Eliminar
->>>>>>> aa8027501b4c073def9c20a08ba1531f326b1aa0
