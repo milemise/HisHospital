@@ -9,3 +9,4 @@ yarn-error.log*
 .DS_Stores
 Thumbs.db
 .vscode/
+.vercel
