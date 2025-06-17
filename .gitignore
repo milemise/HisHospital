@@ -1,22 +1,14 @@
-# Dependencias de Node
 /node_modules
 
-# Archivos compilados y de salida
 /public/css/style.css
 
-# Archivo de entorno
 .env
 
-# Ejecutable de Tailwind descargado manualmente
-tailwindcss.exe
-
-# Logs de debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Archivos del sistema operativo y del editor
-.DS_Store
+.DS_Stores
 Thumbs.db
 .vscode/
 tailwindcss.exe

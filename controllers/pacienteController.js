@@ -1,9 +1,31 @@
-const { Paciente, ObraSocial, Admision } = require('../models');
+const { Paciente, ObraSocial, Admision, Cama, Habitacion, Ala } = require('../models');
 
 exports.listarPacientes = async (req, res) => {
     try {
         const pacientes = await Paciente.findAll({
-            include: [{ model: ObraSocial, as: 'obraSocial' }],
+            include: [
+                { model: ObraSocial, as: 'obraSocial' },
+                {
+                    model: Admision,
+                    as: 'admisiones',
+                    where: { estado_admision: 'En Proceso' },
+                    required: false,
+                    limit: 1,
+                    order: [['fecha_ingreso', 'DESC']],
+                    include: [{
+                        model: Cama,
+                        as: 'cama',
+                        include: [{
+                            model: Habitacion,
+                            as: 'habitacion',
+                            include: [{
+                                model: Ala,
+                                as: 'ala'
+                            }]
+                        }]
+                    }]
+                }
+            ],
             order: [['apellido', 'ASC'], ['nombre', 'ASC']]
         });
         res.render('pacientes/index', {
@@ -69,7 +91,7 @@ exports.guardarPaciente = async (req, res) => {
 
 exports.formularioEditar = async (req, res) => {
     try {
-        const paciente = await Paciente.findByPk(req.params.id_paciente, { // <--- CAMBIO AQUÍ: id_paciente
+        const paciente = await Paciente.findByPk(req.params.id_paciente, {
             include: [{ model: ObraSocial, as: 'obraSocial' }]
         });
         if (!paciente) {
@@ -92,7 +114,7 @@ exports.formularioEditar = async (req, res) => {
 
 exports.actualizarPaciente = async (req, res) => {
     try {
-        const { id_paciente } = req.params; // <--- CAMBIO AQUÍ: id_paciente
+        const { id_paciente } = req.params;
         const {
             nombre, apellido, dni, fecha_nacimiento, genero, telefono,
             email, direccion, grupo_sanguineo, alergias, medicamentos_actuales,
@@ -103,7 +125,7 @@ exports.actualizarPaciente = async (req, res) => {
             throw new Error('Faltan campos obligatorios para el paciente.');
         }
 
-        const paciente = await Paciente.findByPk(id_paciente); // <--- CAMBIO AQUÍ: id_paciente
+        const paciente = await Paciente.findByPk(id_paciente);
         if (!paciente) {
             throw new Error('Paciente no encontrado.');
         }
@@ -126,18 +148,18 @@ exports.actualizarPaciente = async (req, res) => {
             errorMessage = error.message || errorMessage;
         }
         req.flash('error', errorMessage);
-        res.redirect(`/pacientes/editar/${req.params.id_paciente}`); // <--- CAMBIO AQUÍ: id_paciente
+        res.redirect(`/pacientes/editar/${req.params.id_paciente}`);
     }
 };
 
 exports.eliminarPaciente = async (req, res) => {
     try {
-        const { id_paciente } = req.params; // <--- CAMBIO AQUÍ: id_paciente
-        const paciente = await Paciente.findByPk(id_paciente); // <--- CAMBIO AQUÍ: id_paciente
+        const { id_paciente } = req.params;
+        const paciente = await Paciente.findByPk(id_paciente);
         if (!paciente) {
             throw new Error('Paciente no encontrado.');
         }
-        const admisionesActivas = await Admision.count({ where: { id_paciente: id_paciente, estado: 'Activo' } }); // <--- CAMBIO AQUÍ: id_paciente, estado
+        const admisionesActivas = await Admision.count({ where: { id_paciente: id_paciente, estado_admision: 'Activa' } });
         if (admisionesActivas > 0) {
             throw new Error('No se puede eliminar el paciente porque tiene admisiones activas. Primero de de alta o cancele las admisiones.');
         }
@@ -151,11 +173,60 @@ exports.eliminarPaciente = async (req, res) => {
     }
 };
 
-// Ruta para mostrar formulario de nueva admisión (usando un paciente existente)
+exports.verAdmision = async (req, res) => {
+    try {
+        const pacienteId = req.params.id_paciente;
+        const admision = await Admision.findOne({
+            where: {
+                id_paciente: pacienteId,
+                estado_admision: 'En Proceso' // <--- CAMBIO AQUÍ
+            },
+            include: [
+                { model: Paciente, as: 'paciente' },
+                {
+                    model: Cama,
+                    as: 'cama',
+                    include: [{
+                        model: Habitacion,
+                        as: 'habitacion',
+                        include: [{
+                            model: Ala,
+                            as: 'ala'
+                        }]
+                    }]
+                }
+            ]
+        });
+
+        if (!admision) {
+            const paciente = await Paciente.findByPk(pacienteId);
+            req.flash('error', 'Este paciente no se encuentra internado actualmente.');
+            return res.render('pacientes/verDetalleAdmision', {
+                paciente: paciente,
+                admision: null,
+                error: req.flash('error'),
+                title: 'Paciente sin Admisión Activa'
+            });
+        }
+
+        res.render('pacientes/verDetalleAdmision', {
+            admision: admision,
+            paciente: admision.paciente,
+            success: req.flash('success'),
+            error: req.flash('error'),
+            title: 'Detalle de Admisión'
+        });
+
+    } catch (error) {
+        console.error('Error al ver admisión del paciente:', error);
+        req.flash('error', 'Error al cargar los detalles de la admisión.');
+        res.redirect('/pacientes');
+    }
+};
+
 exports.formularioAdmisionParaPaciente = async (req, res) => {
     try {
-        const pacienteId = req.params.id_paciente; // <--- CAMBIO AQUÍ: id_paciente
-        // Redirige al formulario de nueva admisión, posiblemente pre-llenando el paciente
+        const pacienteId = req.params.id_paciente;
         res.redirect(`/admisiones/nueva?id_paciente=${pacienteId}`);
     } catch (error) {
         console.error('Error al preparar admisión para paciente:', error);

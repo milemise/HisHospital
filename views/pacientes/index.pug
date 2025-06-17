@@ -30,19 +30,26 @@ block content
                 td.fw-medium #{paciente.nombre} #{paciente.apellido}
                 td #{paciente.fecha_nacimiento ? new Date(paciente.fecha_nacimiento).toLocaleDateString() : 'N/A'}
                 td
-                  span.badge.rounded-pill(class=(paciente.sexo === 'M' ? 'bg-primary' : 'bg-danger'))
-                    | #{paciente.sexo === 'M' ? 'Masculino' : 'Femenino'}
+                  span.badge.rounded-pill(class=(paciente.genero === 'Masculino' ? 'bg-primary' : paciente.genero === 'Femenino' ? 'bg-danger' : 'bg-secondary'))
+                    | #{paciente.genero === 'Masculino' ? 'Masculino' : paciente.genero === 'Femenino' ? 'Femenino' : 'Otro'}
                 td.font-monospace #{paciente.dni}
-                td #{(paciente.ultima_admision && paciente.ultima_admision.fecha) ? new Date(paciente.ultima_admision.fecha).toLocaleDateString() : 'N/A'}
+                
+                - const admisionActiva = paciente.admisiones && paciente.admisiones.length > 0 ? paciente.admisiones[0] : null;
+                - const fechaIngresoAdmision = admisionActiva ? new Date(admisionActiva.fecha_ingreso).toLocaleDateString() : 'N/A';
+                - const estadoAdmision = admisionActiva ? admisionActiva.estado_admision : 'Sin internar';
+                - const habitacionAsignada = admisionActiva && admisionActiva.cama && admisionActiva.cama.habitacion ? admisionActiva.cama.habitacion.numero : '—';
+
+                td= fechaIngresoAdmision
                 td
-                  span.badge.rounded-pill(class=((paciente.ultima_admision && paciente.ultima_admision.estado) === 'Activo' ? 'bg-success' : 'bg-secondary'))
-                    | #{(paciente.ultima_admision && paciente.ultima_admision.estado) || 'Sin internar'}
-                td.font-medium #{(paciente.ultima_admision && paciente.ultima_admision.habitacion) || '—'}
+                  span.badge.rounded-pill(class=(estadoAdmision === 'Activa' ? 'bg-success' : 'bg-secondary'))
+                    | #{estadoAdmision}
+                td.font-medium= habitacionAsignada
+                
                 td
                   .btn-group.btn-group-sm(role='group')
-                    a(href=`/pacientes/${paciente.id_paciente}`).btn.btn-outline-primary(title="Ver Detalle")
+                    a(href=`/pacientes/admision/${paciente.id_paciente}`, class="btn btn-outline-primary", title="Ver Admisión del Paciente")
                       i.fas.fa-eye
-                    a(href=`/pacientes/editar/${paciente.id_paciente}`).btn.btn-outline-warning(title="Editar")
+                    a(href=`/pacientes/editar/${paciente.id_paciente}`, class="btn btn-outline-warning", title="Editar Paciente")
                       i.fas.fa-edit
-                    a(href=`/pacientes/admision/${paciente.id_paciente}`).btn.btn-outline-info(title="Nueva Admisión")
+                    a(href=`/admisiones/nueva?id_paciente=${paciente.id_paciente}`).btn.btn-outline-info(title="Registrar Nueva Admisión")
                       i.fas.fa-procedures

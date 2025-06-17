@@ -13,34 +13,35 @@ block content
               .card-body
                 .row.align-items-end
                   .col-md-8.mb-3.mb-md-0
-                    label.form-label(for="pacienteSelector") Seleccionar Paciente Existente
-                    select.form-select#pacienteSelector(name="id_paciente_seleccionado", required)
+                    label.form-label(for="id_paciente_seleccionado") Seleccionar Paciente Existente
+                    select.form-select#id_paciente_seleccionado(name="id_paciente_seleccionado", required)
                       option(value="") -- Seleccionar paciente --
                       option(value="nuevo") -- Registrar Nuevo Paciente --
                       each p in pacientes
-                        option(value=p.id_paciente)= p.nombre + ' ' + p.apellido + ' (DNI: ' + p.dni + ')'
+                        option(value=p.id_paciente)= `${p.nombre} ${p.apellido} (DNI: ${p.dni})`
                   .col-md-4.d-flex.align-items-center.justify-content-start.justify-content-md-end.pb-1
                     .form-check.form-switch
                       input.form-check-input#es_emergencia(type="checkbox", name="es_emergencia")
                       label.form-check-label.fw-bold.text-danger(for="es_emergencia") Emergencia
 
-            #nuevoPacienteFields.card.mb-4(style="display: none;")
+            #newPacienteFields.card.mb-4(style="display: none;")
               .card-header.fw-bold Información del Nuevo Paciente
               .card-body
                 .row.g-3
-                  .col-md-6: .form-floating
+                  .col-md-6#nombreNuevoContainer: .form-floating
                     input.form-control#nombre_paciente_nuevo(type="text", name="nombre_paciente_nuevo", placeholder="Nombre")
                     label(for="nombre_paciente_nuevo") Nombre
-                  .col-md-6: .form-floating
+                  .col-md-6#apellidoNuevoContainer: .form-floating
                     input.form-control#apellido_paciente_nuevo(type="text", name="apellido_paciente_nuevo", placeholder="Apellido")
                     label(for="apellido_paciente_nuevo") Apellido
-                  .col-md-6: .form-floating
+                  .col-md-6#dniNuevoContainer: .form-floating
                     input.form-control#dni_paciente_nuevo(type="text", name="dni_paciente_nuevo", placeholder="DNI")
                     label(for="dni_paciente_nuevo") DNI
-                  .col-md-6
+                  .col-md-6#fechaNacimientoNuevoContainer
                     label.form-label(for="fecha_nacimiento_nuevo") Fecha de Nacimiento
                     input.form-control#fecha_nacimiento_nuevo(type="date", name="fecha_nacimiento_nuevo")
-                  .col-md-6
+                  
+                  .col-md-6#generoNuevoContainer
                     label.form-label(for="genero_paciente_nuevo") Género
                     select.form-select#genero_paciente_nuevo(name="genero_paciente_nuevo")
                       option(value="") Seleccionar Género
@@ -48,16 +49,17 @@ block content
                       option(value="Femenino") Femenino
                       option(value="Otro") Otro
                       option(value="No especificado") No especificado
-                  .col-md-6: .form-floating
+                  
+                  .col-md-6#telefonoNuevoContainer: .form-floating
                     input.form-control#telefono_nuevo(type="text", name="telefono_nuevo", placeholder="Teléfono")
                     label(for="telefono_nuevo") Teléfono
-                  .col-md-6: .form-floating
+                  .col-md-6#emailNuevoContainer: .form-floating
                     input.form-control#email_nuevo(type="email", name="email_nuevo", placeholder="Email")
                     label(for="email_nuevo") Email
-                  .col-md-6: .form-floating
+                  .col-md-6#direccionNuevoContainer: .form-floating
                     input.form-control#direccion_nuevo(type="text", name="direccion_nuevo", placeholder="Dirección")
                     label(for="direccion_nuevo") Dirección
-                  .col-md-6
+                  .col-md-6#grupoSanguineoNuevoContainer
                     label.form-label(for="grupo_sanguineo_nuevo") Grupo Sanguíneo
                     select.form-select#grupo_sanguineo_nuevo(name="grupo_sanguineo_nuevo")
                       option(value="") Seleccionar
@@ -69,19 +71,19 @@ block content
                       option(value="AB-") AB-
                       option(value="O+") O+
                       option(value="O-") O-
-                  .col-md-6: .form-floating
+                  .col-md-6#alergiasNuevoContainer: .form-floating
                     textarea.form-control#alergias_nuevo(name="alergias_nuevo", placeholder="Alergias", style="height: 100px")
                     label(for="alergias_nuevo") Alergias
-                  .col-md-6: .form-floating
+                  .col-md-6#medicamentosNuevoContainer: .form-floating
                     textarea.form-control#medicamentos_nuevo(name="medicamentos_nuevo", placeholder="Medicamentos Actuales", style="height: 100px")
                     label(for="medicamentos_nuevo") Medicamentos Actuales
-                  .col-md-6
+                  .col-md-6#obraSocialNuevoContainer
                     label.form-label(for="id_obra_social_nuevo") Obra Social
                     select.form-select#id_obra_social_nuevo(name="id_obra_social_nuevo")
                       option(value="") Seleccionar Obra Social
                       each os in obrasSociales
                         option(value=os.id_obra_social)= os.nombre
-                  .col-md-6: .form-floating
+                  .col-md-6#numeroAfiliadoNuevoContainer: .form-floating
                     input.form-control#numero_afiliado_nuevo(type="text", name="numero_afiliado_nuevo", placeholder="Número de Afiliado")
                     label(for="numero_afiliado_nuevo") Número de Afiliado
 

@@ -79,7 +79,7 @@ CREATE TABLE `pacientes` (
   `id_paciente` int(11) NOT NULL, 
   `nombre` varchar(100) NOT NULL,
   `apellido` varchar(100) NOT NULL,
-  `dni` varchar(20) NOT NULL UNIQUE,
+  `dni` varchar(50) NOT NULL UNIQUE,
   `fecha_nacimiento` date NOT NULL,
   `genero` enum('Masculino','Femenino','Otro','No especificado') DEFAULT 'No especificado',
   `telefono` varchar(20) DEFAULT NULL,
