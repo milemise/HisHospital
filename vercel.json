@@ -11,5 +11,10 @@
       "src": "/(.*)",
       "dest": "app.js"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  }
 }
