@@ -33,7 +33,6 @@ app.use('/api/', rateLimit({
         await sequelize.authenticate();
     //    await sequelize.sync({alter:true})
         console.log('🟢 Conexión a la DB establecida correctamente.');
-        //await sequelize.sync({ alter: true });
         console.log('🟢 Modelos de la DB sincronizados.');
     } catch (error) {
         console.error('🔴 Error de conexión o sincronización a la DB:', error);
