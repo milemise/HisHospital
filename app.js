@@ -31,7 +31,7 @@ app.use('/api/', rateLimit({
 (async () => {
     try {
         await sequelize.authenticate();
-    //    await sequelize.sync({alter:true})
+     // await sequelize.sync({alter:true})
         console.log('🟢 Conexión a la DB establecida correctamente.');
         console.log('🟢 Modelos de la DB sincronizados.');
     } catch (error) {
