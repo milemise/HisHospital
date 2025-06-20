@@ -1,4 +1,4 @@
-const { sequelize, Admision, Paciente, Cama, Habitacion, Ala, ObraSocial, Medico, Evaluacion, Alta } = require('../models');
+const { sequelize, Admision, Paciente, Cama, Habitacion, Ala, ObraSocial, Medico, Evaluacion, Alta, AsignacionCama } = require('../models');
 
 exports.listarAdmisiones = async (req, res) => {
     try {
@@ -8,6 +8,7 @@ exports.listarAdmisiones = async (req, res) => {
                 {
                     model: Cama,
                     as: 'cama',
+                    through: { where: { es_actual: true }, required: false },
                     include: [
                         { model: Habitacion, as: 'habitacion', include: [{ model: Ala, as: 'ala' }] }
                     ]
@@ -23,28 +24,88 @@ exports.listarAdmisiones = async (req, res) => {
     } catch (error) {
         console.error('Error al listar admisiones:', error);
         req.flash('error', 'Error al cargar las admisiones.');
-        res.redirect('/error');
+        res.redirect('/');
     }
 };
 
 exports.formularioNueva = async (req, res) => {
     try {
+        const pacienteIdSeleccionado = req.query.id_paciente;
+        let pacienteSeleccionado = null;
+        let camasDisponibles = [];
+
         const pacientes = await Paciente.findAll({
             attributes: ['id_paciente', 'nombre', 'apellido', 'dni', 'genero'],
             order: [['apellido', 'ASC'], ['nombre', 'ASC']]
         });
-        const camasDisponibles = await Cama.findAll({
-            where: { estado: 'Libre' },
-            include: [{ model: Habitacion, as: 'habitacion', include: [{ model: Ala, as: 'ala' }] }]
-        });
+
         const obrasSociales = await ObraSocial.findAll();
+        
+        if (pacienteIdSeleccionado) {
+            pacienteSeleccionado = await Paciente.findByPk(pacienteIdSeleccionado);
+
+            if (pacienteSeleccionado) {
+                const sexoPacienteNuevo = pacienteSeleccionado.genero;
+
+                const camasLibres = await Cama.findAll({
+                    where: { estado: 'Libre' },
+                    include: [{
+                        model: Habitacion,
+                        as: 'habitacion',
+                        include: [{
+                            model: Cama,
+                            as: 'camas',
+                            include: [{
+                                model: Admision,
+                                as: 'admisiones',
+                                where: { estado_admision: 'Activa' },
+                                required: false,
+                                include: [{
+                                    model: Paciente,
+                                    as: 'paciente',
+                                    attributes: ['genero']
+                                }]
+                            }]
+                        },
+                        {
+                           model: Ala,
+                           as: 'ala'
+                        }]
+                    }]
+                });
+
+                camasDisponibles = camasLibres.filter(cama => {
+                    const habitacion = cama.habitacion;
+                    if (habitacion.tipo !== 'Compartida') {
+                        return true;
+                    }
+                    
+                    const otraCamaOcupada = habitacion.camas.find(c => c.id_cama !== cama.id_cama && c.estado === 'Ocupada');
+
+                    if (!otraCamaOcupada) {
+                        return true;
+                    }
+                    
+                    if (otraCamaOcupada.admisiones && otraCamaOcupada.admisiones.length > 0) {
+                        const pacienteExistente = otraCamaOcupada.admisiones[0].paciente;
+                        if (pacienteExistente && pacienteExistente.genero === sexoPacienteNuevo) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+            }
+        }
+        
         res.render('admisiones/nueva', {
             pacientes: pacientes,
             camasDisponibles: camasDisponibles,
             obrasSociales: obrasSociales,
+            pacienteSeleccionado: pacienteSeleccionado,
             error: req.flash('error'),
             success: req.flash('success')
         });
+
     } catch (error) {
         console.error('Error al cargar formulario de nueva admisión:', error);
         req.flash('error', 'Error al preparar el formulario de admisión.');
@@ -65,13 +126,12 @@ exports.guardarAdmision = async (req, res) => {
 
         let pacienteId;
         const esNuevaAdmisionEmergencia = es_emergencia === 'on' || es_emergencia === true;
-
         let finalDniToUse = dni_paciente_nuevo || null;
         let finalNombreToUse = nombre_paciente_nuevo || null;
         let finalApellidoToUse = apellido_paciente_nuevo || null;
         let finalGeneroToUse = genero_paciente_nuevo || null;
         let finalFechaNacimientoToUse = fecha_nacimiento_nuevo || null;
-
+        
         if (id_paciente_seleccionado && id_paciente_seleccionado !== 'nuevo') {
             pacienteId = id_paciente_seleccionado;
             const pacienteExistente = await Paciente.findByPk(pacienteId, { transaction: t });
@@ -83,7 +143,6 @@ exports.guardarAdmision = async (req, res) => {
                 if (!finalGeneroToUse) {
                     throw new Error('Para un paciente de emergencia, el Género es obligatorio.');
                 }
-
                 if (!finalDniToUse) {
                     const randomSuffix = Math.random().toString(36).substr(2, 5).toUpperCase();
                     const timestampSuffix = Date.now().toString().slice(-5);
@@ -121,51 +180,32 @@ exports.guardarAdmision = async (req, res) => {
                 },
                 transaction: t
             });
-
-            if (!created) {
-                if (!esNuevaAdmisionEmergencia) {
-                    throw new Error(`Ya existe un paciente con el DNI ${finalDniToUse}. Seleccione el paciente existente del desplegable o proporcione un DNI diferente.`);
-                }
+            if (!created && !esNuevaAdmisionEmergencia) {
+                throw new Error(`Ya existe un paciente con el DNI ${finalDniToUse}. Seleccione el paciente existente del desplegable o proporcione un DNI diferente.`);
             }
             pacienteId = newOrExistingPaciente.id_paciente;
-            if (created && esNuevaAdmisionEmergencia) {
-                req.flash('success', 'Paciente de emergencia registrado temporalmente.');
-            } else if (created) {
-                req.flash('success', 'Nuevo paciente registrado con éxito.');
-            }
         }
 
         const camaIdNumerico = parseInt(id_cama_asignada, 10);
         if (!id_cama_asignada || isNaN(camaIdNumerico)) {
             throw new Error('Debe seleccionar una cama válida para la admisión.');
         }
-
-        const cama = await Cama.findByPk(camaIdNumerico, {
-            include: [{ model: Habitacion, as: 'habitacion', required: true }],
-            transaction: t,
-            lock: t.LOCK.UPDATE
-        });
-
-        if (!cama) {
-            throw new Error('La cama seleccionada no existe.');
+        
+        const cama = await Cama.findByPk(camaIdNumerico, { transaction: t, lock: t.LOCK.UPDATE });
+        if (!cama || cama.estado !== 'Libre') {
+            throw new Error(`La cama seleccionada no está disponible.`);
         }
         
-        if (cama.estado !== 'Libre') {
-            throw new Error(`La cama ${cama.numero} de la Habitación ${cama.habitacion.numero} no está disponible. Estado actual: ${cama.estado}.`);
-        }
-
         const pacienteActual = await Paciente.findByPk(pacienteId, { transaction: t });
-        if (!pacienteActual) {
-            throw new Error('Error interno: Paciente no encontrado después de creación/selección.');
-        }
-        const generoPacienteInicial = pacienteActual.genero ? pacienteActual.genero[0].toUpperCase() : null;
+        const habitacion = await Habitacion.findByPk(cama.id_habitacion, {
+            include: [{ model: Cama, as: 'camas', include: [{model: Admision, as: 'admisiones', where: {estado_admision: 'Activa'}, required: false, include: [{model: Paciente, as: 'paciente'}]}]}],
+            transaction: t
+        });
 
-        if (cama.habitacion.tipo === 'Compartida') {
-            if (cama.genero_asignado && (generoPacienteInicial === 'M' || generoPacienteInicial === 'F') && cama.genero_asignado !== generoPacienteInicial) {
-                throw new Error(`La cama ${cama.numero} ya está designada para género ${cama.genero_asignado} y el paciente actual es de género ${generoPacienteInicial}.`);
-            }
-            if (cama.genero_asignado === null && (generoPacienteInicial === 'M' || generoPacienteInicial === 'F')) {
-                await cama.update({ genero_asignado: generoPacienteInicial }, { transaction: t });
+        if (habitacion.tipo === 'Compartida') {
+            const otraCamaOcupada = habitacion.camas.find(c => c.estado === 'Ocupada');
+            if (otraCamaOcupada && otraCamaOcupada.admisiones[0].paciente.genero !== pacienteActual.genero) {
+                throw new Error(`Conflicto de género. La habitación ya está ocupada por un paciente de género diferente.`);
             }
         }
         
@@ -174,26 +214,25 @@ exports.guardarAdmision = async (req, res) => {
             fecha_ingreso: fecha_ingreso || new Date(),
             motivo_internacion: motivo_internacion,
             es_emergencia: esNuevaAdmisionEmergencia,
-            estado_admision: 'En Proceso',
-            id_cama_asignada: camaIdNumerico
+            estado_admision: 'Activa'
+        }, { transaction: t });
+        
+        await AsignacionCama.create({
+            id_admision: nuevaAdmision.id_admision,
+            id_cama: camaIdNumerico,
+            fecha_asignacion: new Date(),
+            es_actual: true
         }, { transaction: t });
 
         await cama.update({ estado: 'Ocupada' }, { transaction: t });
-
+        
         await t.commit();
         req.flash('success', 'Admisión y asignación de cama realizadas con éxito.');
         res.redirect('/admisiones');
     } catch (error) {
         await t.rollback();
         console.error('Error al guardar admisión:', error);
-
-        let errorMessage = 'Error al procesar la admisión.';
-        if (error.name === 'SequelizeUniqueConstraintError') {
-            errorMessage = 'Ya existe un registro con el DNI proporcionado para el nuevo paciente.';
-        } else {
-            errorMessage = error.message || errorMessage;
-        }
-        req.flash('error', errorMessage);
+        req.flash('error', error.message || 'Error al procesar la admisión.');
         res.redirect('/admisiones/nueva');
     }
 };
@@ -205,28 +244,28 @@ exports.formularioEditar = async (req, res) => {
                 { model: Paciente, as: 'paciente' },
                 {
                     model: Cama, as: 'cama',
+                    through: { where: { es_actual: true } },
                     include: [{ model: Habitacion, as: 'habitacion', include: [{ model: Ala, as: 'ala' }] }]
                 }
             ]
         });
-
         if (!admision) {
             req.flash('error', 'Admisión no encontrada.');
             return res.redirect('/admisiones');
         }
-
         const pacientes = await Paciente.findAll({ order: [['apellido', 'ASC']] });
         
+        const camaActualId = (admision.Camas && admision.Camas.length > 0) ? admision.Camas[0].id_cama : null;
+
         const camasDisponibles = await Cama.findAll({
             where: {
                 [sequelize.Op.or]: [
                     { estado: 'Libre' },
-                    { id_cama: admision.id_cama_asignada }
+                    { id_cama: camaActualId }
                 ]
             },
             include: [{ model: Habitacion, as: 'habitacion', include: [{ model: Ala, as: 'ala' }] }]
         });
-
         res.render('admisiones/editar', {
             title: `Editar Admisión ${admision.id_admision}`,
             admision: admision,
@@ -246,56 +285,34 @@ exports.actualizarAdmision = async (req, res) => {
     const t = await sequelize.transaction();
     try {
         const { id_admision } = req.params;
-        const { motivo_internacion, id_cama_nueva, estado_admision, fecha_alta, diagnostico_egreso, condiciones_egreso } = req.body;
-
-        const admision = await Admision.findByPk(id_admision, { transaction: t, include: [{ model: Cama, as: 'cama' }] });
+        const { motivo_internacion, id_cama_nueva, estado_admision, fecha_alta } = req.body;
+        const admision = await Admision.findByPk(id_admision, { transaction: t });
         if (!admision) {
             throw new Error('Admisión no encontrada.');
         }
 
-        const oldCamaId = admision.id_cama_asignada;
+        const asignacionActual = await AsignacionCama.findOne({ where: { id_admision, es_actual: true }, transaction: t });
+        const oldCamaId = asignacionActual ? asignacionActual.id_cama : null;
         const newCamaId = id_cama_nueva ? parseInt(id_cama_nueva, 10) : oldCamaId;
 
         await admision.update({
-            motivo_internacion: motivo_internacion,
-            estado_admision: estado_admision,
+            motivo_internacion,
+            estado_admision,
             fecha_alta: fecha_alta || null,
-            diagnostico_egreso: (estado_admision === 'Dada de Alta' ? diagnostico_egreso : null) || null,
-            condiciones_egreso: (estado_admision === 'Dada de Alta' ? condiciones_egreso : null) || null,
-            id_cama_asignada: newCamaId
         }, { transaction: t });
 
-        if (newCamaId !== oldCamaId) {
-            if (oldCamaId) {
+        if (newCamaId && newCamaId !== oldCamaId) {
+            if (asignacionActual) {
+                await asignacionActual.update({ es_actual: false, fecha_liberacion: new Date() }, { transaction: t });
                 const oldCama = await Cama.findByPk(oldCamaId, { transaction: t });
                 if (oldCama) {
-                    await oldCama.update({ estado: 'Libre', genero_asignado: null }, { transaction: t });
+                    await oldCama.update({ estado: 'Libre' }, { transaction: t });
                 }
             }
-
-            const nuevaCama = await Cama.findByPk(newCamaId, {
-                include: [{ model: Habitacion, as: 'habitacion', required: true }],
-                transaction: t,
-                lock: t.LOCK.UPDATE
-            });
-
-            if (!nuevaCama) {
-                throw new Error('La nueva cama seleccionada no existe.');
-            }
-            if (nuevaCama.estado !== 'Libre') {
-                throw new Error(`La cama ${nuevaCama.numero} de la Habitación ${nuevaCama.habitacion.numero} no está disponible para asignación. Estado actual: ${nuevaCama.estado}.`);
-            }
-            
-            if (nuevaCama.habitacion.tipo === 'Compartida') {
-                const pacienteAdmision = await Paciente.findByPk(admision.id_paciente, { transaction: t });
-                const generoPaciente = pacienteAdmision.genero ? pacienteAdmision.genero[0].toUpperCase() : null;
-
-                if (nuevaCama.genero_asignado && generoPaciente && nuevaCama.genero_asignado !== generoPaciente) {
-                    throw new Error(`La cama ${nuevaCama.numero} ya está designada para género ${nuevaCama.genero_asignado} y el paciente actual es de género ${generoPaciente}.`);
-                }
-                if (nuevaCama.genero_asignado === null && generoPaciente) {
-                    await nuevaCama.update({ genero_asignado: generoPaciente }, { transaction: t });
-                }
+            await AsignacionCama.create({ id_admision, id_cama: newCamaId, fecha_asignacion: new Date(), es_actual: true }, { transaction: t });
+            const nuevaCama = await Cama.findByPk(newCamaId, { transaction: t });
+            if (!nuevaCama || nuevaCama.estado !== 'Libre') {
+                throw new Error('La nueva cama seleccionada no está disponible.');
             }
             await nuevaCama.update({ estado: 'Ocupada' }, { transaction: t });
         }
@@ -303,12 +320,12 @@ exports.actualizarAdmision = async (req, res) => {
         if ((estado_admision === 'Dada de Alta' || estado_admision === 'Cancelada') && oldCamaId) {
             const camaFinal = await Cama.findByPk(oldCamaId, { transaction: t });
             if (camaFinal) {
-                if (camaFinal.id_cama !== newCamaId) {
-                    await camaFinal.update({ estado: 'Libre', genero_asignado: null }, { transaction: t });
+                await camaFinal.update({ estado: 'Libre' }, { transaction: t });
+                if(asignacionActual) {
+                    await asignacionActual.update({ es_actual: false, fecha_liberacion: new Date() }, { transaction: t });
                 }
             }
         }
-
         await t.commit();
         req.flash('success', 'Admisión actualizada con éxito.');
         res.redirect('/admisiones');
@@ -324,7 +341,7 @@ exports.cancelarAdmision = async (req, res) => {
     const t = await sequelize.transaction();
     try {
         const { id_admision } = req.params;
-        const admision = await Admision.findByPk(id_admision, { transaction: t, include: [{ model: Cama, as: 'cama' }] });
+        const admision = await Admision.findByPk(id_admision, { transaction: t });
 
         if (!admision) {
             throw new Error('Admisión no encontrada.');
@@ -332,13 +349,14 @@ exports.cancelarAdmision = async (req, res) => {
         if (admision.estado_admision !== 'Activa' && admision.estado_admision !== 'En Proceso') {
             throw new Error('No se puede cancelar una admisión que no esté Activa o En Proceso.');
         }
-
         await admision.update({ estado_admision: 'Cancelada', fecha_alta: new Date() }, { transaction: t });
-
-        if (admision.id_cama_asignada) {
-            const cama = await Cama.findByPk(admision.id_cama_asignada, { transaction: t });
+        
+        const asignacion = await AsignacionCama.findOne({ where: { id_admision, es_actual: true }, transaction: t });
+        if (asignacion) {
+            await asignacion.update({ es_actual: false, fecha_liberacion: new Date() }, { transaction: t });
+            const cama = await Cama.findByPk(asignacion.id_cama, { transaction: t });
             if (cama) {
-                await cama.update({ estado: 'Libre', genero_asignado: null }, { transaction: t });
+                await cama.update({ estado: 'Libre' }, { transaction: t });
             }
         }
 
@@ -356,8 +374,7 @@ exports.cancelarAdmision = async (req, res) => {
 exports.darAlta = async (req, res) => {
     try {
         res.redirect(`/altas/nueva/${req.params.id_admision}`);
-    }
-     catch (error) {
+    } catch (error) {
         console.error('Error al redirigir para dar de alta:', error);
         req.flash('error', 'Error al preparar el alta.');
         res.redirect('/admisiones');
@@ -371,18 +388,17 @@ exports.verDetalles = async (req, res) => {
                 { model: Paciente, as: 'paciente', include: [{ model: ObraSocial, as: 'obraSocial' }] },
                 {
                     model: Cama, as: 'cama',
+                    through: { where: { es_actual: true } },
                     include: [{ model: Habitacion, as: 'habitacion', include: [{ model: Ala, as: 'ala' }] }]
                 },
                 { model: Evaluacion, as: 'evaluaciones', include: [{ model: Medico, as: 'medico' }], order: [['fecha_evaluacion', 'DESC']] },
                 { model: Alta, as: 'alta', include: [{ model: Medico, as: 'medico' }] }
             ]
         });
-
         if (!admision) {
             req.flash('error', 'Admisión no encontrada.');
             return res.redirect('/admisiones');
         }
-
         res.render('admisiones/detalles', {
             admision: admision,
             success: req.flash('success'),

@@ -5,43 +5,32 @@ const passport = require('passport');
 const path = require('path');
 const flash = require('connect-flash');
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const { sequelize, Medico, Usuario } = require('./models');
-const app = express();
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
-      imgSrc: ["'self'", "data:"],
-      connectSrc: ["'self'"],
-      fontSrc: ["'self'", "https://cdnjs.cloudflare.com"],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      frameSrc: ["'none'"],
-    },
-  },
-}));
-app.use('/api/', rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    message: 'Demasiadas peticiones desde esta IP, por favor inténtalo de nuevo después de 15 minutos.'
-}));
-(async () => {
-    try {
-        await sequelize.authenticate();
-     // await sequelize.sync({alter:true})
-        console.log('🟢 Conexión a la DB establecida correctamente.');
-        console.log('🟢 Modelos de la DB sincronizados.');
-    } catch (error) {
-        console.error('🔴 Error de conexión o sincronización a la DB:', error);
-        process.exit(1);
-    }
-})();
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
+
+const sequelize = require('./config/db');
 require('./config/passport');
+
+const app = express();
+
+const sessionStore = new SequelizeStore({
+    db: sequelize,
+    tableName: 'sessions'
+});
+
+app.use(helmet({
+    contentSecurityPolicy: false
+}));
+
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(session({
     secret: process.env.SESSION_SECRET || "unaFraseSecretaMuyLargaYComplejaParaTuAppHIS!",
+    store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -50,21 +39,20 @@ app.use(session({
         httpOnly: true
     }
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+
 app.use((req, res, next) => {
     res.locals.user = req.user || null;
-    res.locals.isAuthenticated = req.isAuthenticated && req.isAuthenticated();
-    res.locals.success = req.flash('success');
+    res.locals.isAuthenticated = req.isAuthenticated();
+    res.locals.success_msg = req.flash('success');
+    res.locals.error_msg = req.flash('error');
     res.locals.error = req.flash('error');
     next();
 });
+
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
 const medicoRouter = require('./routes/medico');
@@ -77,6 +65,7 @@ const altasRouter = require('./routes/altas');
 const evaluacionesRouter = require('./routes/evaluaciones');
 const turnosRouter = require('./routes/turnos');
 const usuariosRouter = require('./routes/usuarios');
+
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
 app.use('/medicos', medicoRouter);
@@ -89,28 +78,30 @@ app.use('/altas', altasRouter);
 app.use('/evaluaciones', evaluacionesRouter);
 app.use('/turnos', turnosRouter);
 app.use('/usuarios', usuariosRouter);
-function ensureAuthenticated(req, res, next) {
-    return next();
-}
-app.use((req, res, next) => {
-    next();
-});
+
 app.use((err, req, res, next) => {
-    res.locals.message = err.message;
-    const isDevelopment = (process.env.NODE_ENV === 'development' || req.app.get('env') === 'development');
-    res.locals.error = isDevelopment ? err : {};
+    console.error(err.stack);
     res.status(err.status || 500);
     res.render('error', {
-        title: 'Error',
-        status: err.status || 500,
         message: err.message,
-        error: res.locals.error,
-        isDevelopment: isDevelopment
+        error: process.env.NODE_ENV === 'development' ? err : {}
     });
 });
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Servidor iniciado en http://localhost:${PORT}`);
-    console.log(`Entorno: ${process.env.NODE_ENV || 'development'}`);
+
+app.listen(PORT, async () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    try {
+        await sequelize.authenticate();
+        console.log('🟢 Conexión a la DB establecida correctamente.');
+        await sequelize.sync();
+        console.log('🟢 Modelos de la DB sincronizados.');
+        await sessionStore.sync();
+        console.log('🟢 Tabla de sesiones sincronizada.');
+    } catch (error) {
+        console.error('🔴 Error de conexión o sincronización a la DB:', error);
+    }
 });
+
 module.exports = app;
