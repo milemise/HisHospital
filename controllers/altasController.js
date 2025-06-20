@@ -1,4 +1,4 @@
-const { Alta, Admision, Medico, Paciente } = require('../models');
+const { Alta, Admision, Medico, Paciente, AsignacionCama } = require('../models');
 const { sequelize } = require('../models');
 
 exports.listarAltas = async (req, res) => {
