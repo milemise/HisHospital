@@ -4,18 +4,30 @@ exports.listarAdmisiones = async (req, res) => {
     try {
         const admisiones = await Admision.findAll({
             include: [
-                { model: Paciente, as: 'paciente', attributes: ['nombre', 'apellido', 'dni', 'genero'] },
+                {
+                    model: Paciente,
+                    as: 'paciente',
+                    attributes: ['nombre', 'apellido', 'dni', 'genero']
+                },
                 {
                     model: Cama,
-                    as: 'cama',
-                    through: { where: { es_actual: true }, required: false },
+                    as: 'Camas',
+                    through: {
+                        where: { es_actual: true },
+                        required: false
+                    },
                     include: [
-                        { model: Habitacion, as: 'habitacion', include: [{ model: Ala, as: 'ala' }] }
+                        {
+                            model: Habitacion,
+                            as: 'habitacion',
+                            include: [{ model: Ala, as: 'ala' }]
+                        }
                     ]
                 }
             ],
             order: [['fecha_ingreso', 'DESC']]
         });
+
         res.render('admisiones/index', {
             admisiones: admisiones,
             success: req.flash('success'),
