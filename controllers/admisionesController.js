@@ -1,10 +1,15 @@
 const { sequelize, Admision, Paciente, Cama, Habitacion, Ala, ObraSocial, Medico, Evaluacion, Alta } = require('../models');
+const { Op } = require('sequelize');
 
 exports.listarAdmisiones = async (req, res) => {
     try {
         const admisiones = await Admision.findAll({
             include: [
-                { model: Paciente, as: 'paciente' },
+                {
+                    model: Paciente,
+                    as: 'paciente',
+                    attributes: ['id_paciente', 'nombre', 'apellido', 'dni']
+                },
                 {
                     model: Cama,
                     as: 'cama',
@@ -35,16 +40,18 @@ exports.listarAdmisiones = async (req, res) => {
 
 exports.formularioNueva = async (req, res) => {
     try {
-        const pacientes = await Paciente.findAll({ order: [['apellido', 'ASC'], ['nombre', 'ASC']] });
-        const camasDisponibles = await Cama.findAll({
-            where: { estado: 'Libre' },
-            include: [{
-                model: Habitacion,
-                as: 'habitacion',
-                include: [{ model: Ala, as: 'ala' }]
-            }],
-            order: [['id_cama', 'ASC']]
-        });
+        const [pacientes, camasDisponibles] = await Promise.all([
+            Paciente.findAll({ order: [['apellido', 'ASC'], ['nombre', 'ASC']] }),
+            Cama.findAll({
+                where: { estado: 'Libre' },
+                include: [{
+                    model: Habitacion,
+                    as: 'habitacion',
+                    include: [{ model: Ala, as: 'ala' }]
+                }],
+                order: [['id_cama', 'ASC']]
+            })
+        ]);
         res.render('admisiones/nueva', {
             pacientes,
             camasDisponibles,
@@ -79,19 +86,18 @@ exports.guardarAdmision = async (req, res) => {
 
         const habitacion = await Habitacion.findByPk(cama.id_habitacion, { transaction: t });
         if (habitacion.tipo === 'Compartida') {
-            const admisionExistente = await Admision.findOne({
-                where: {
-                    estado_admision: 'Activa',
-                    id_cama_asignada: {
-                        [sequelize.Op.in]: sequelize.literal(`(SELECT id_cama FROM cama WHERE id_habitacion = ${habitacion.id_habitacion})`)
-                    }
-                },
-                include: [{ model: Paciente, as: 'paciente' }],
-                transaction: t
-            });
+            const camasEnHabitacion = await Cama.findAll({ where: { id_habitacion: habitacion.id_habitacion }, transaction: t });
+            const idsCamasOcupadas = camasEnHabitacion.filter(c => c.estado === 'Ocupada').map(c => c.id_cama);
 
-            if (admisionExistente && admisionExistente.paciente.genero !== paciente.genero) {
-                throw new Error(`Conflicto de género. La habitación ya está ocupada por un paciente de género diferente.`);
+            if (idsCamasOcupadas.length > 0) {
+                const admisionExistente = await Admision.findOne({
+                    where: { estado_admision: 'Activa', id_cama_asignada: idsCamasOcupadas },
+                    include: [{ model: Paciente, as: 'paciente' }],
+                    transaction: t
+                });
+                if (admisionExistente && admisionExistente.paciente.genero !== paciente.genero) {
+                    throw new Error(`Conflicto de género. La habitación ya está ocupada por un paciente de género ${admisionExistente.paciente.genero}.`);
+                }
             }
         }
 
@@ -115,140 +121,6 @@ exports.guardarAdmision = async (req, res) => {
     }
 };
 
-exports.formularioEditar = async (req, res) => {
-    try {
-        const admision = await Admision.findByPk(req.params.id_admision, {
-            include: [
-                { model: Paciente, as: 'paciente' },
-                {
-                    model: Cama,
-                    as: 'cama',
-                    include: [{ model: Habitacion, as: 'habitacion', include: [{ model: Ala, as: 'ala' }] }]
-                }
-            ]
-        });
-
-        if (!admision) {
-            req.flash('error', 'Admisión no encontrada.');
-            return res.redirect('/admisiones');
-        }
-
-        const camasDisponibles = await Cama.findAll({
-            where: {
-                [sequelize.Op.or]: [
-                    { estado: 'Libre' },
-                    { id_cama: admision.id_cama_asignada }
-                ]
-            },
-            include: [{ model: Habitacion, as: 'habitacion', include: [{ model: Ala, as: 'ala' }] }]
-        });
-
-        res.render('admisiones/editar', {
-            title: `Editar Admisión #${admision.id_admision}`,
-            admision,
-            camasDisponibles,
-            error: req.flash('error')
-        });
-    } catch (error) {
-        console.error('Error al cargar formulario de edición:', error);
-        req.flash('error', 'Error al preparar el formulario de edición.');
-        res.redirect('/admisiones');
-    }
-};
-
-exports.actualizarAdmision = async (req, res) => {
-    const t = await sequelize.transaction();
-    try {
-        const { id_admision } = req.params;
-        const { motivo_internacion, id_cama_asignada, estado_admision } = req.body;
-
-        const admision = await Admision.findByPk(id_admision, { transaction: t });
-        if (!admision) {
-            throw new Error('Admisión no encontrada.');
-        }
-
-        const oldCamaId = admision.id_cama_asignada;
-        const newCamaId = id_cama_asignada ? parseInt(id_cama_asignada, 10) : oldCamaId;
-
-        await admision.update({
-            motivo_internacion,
-            estado_admision,
-            id_cama_asignada: newCamaId,
-            fecha_alta: (estado_admision === 'Dada de Alta' || estado_admision === 'Cancelada') ? new Date() : null
-        }, { transaction: t });
-
-        if (newCamaId !== oldCamaId) {
-            const nuevaCama = await Cama.findByPk(newCamaId, { transaction: t, lock: t.LOCK.UPDATE });
-            if (!nuevaCama || nuevaCama.estado !== 'Libre') {
-                throw new Error('La nueva cama seleccionada no está disponible.');
-            }
-            await nuevaCama.update({ estado: 'Ocupada' }, { transaction: t });
-
-            if (oldCamaId) {
-                const oldCama = await Cama.findByPk(oldCamaId, { transaction: t });
-                if (oldCama) await oldCama.update({ estado: 'Libre' }, { transaction: t });
-            }
-        } else if ((estado_admision === 'Dada de Alta' || estado_admision === 'Cancelada') && oldCamaId) {
-            const camaALiberar = await Cama.findByPk(oldCamaId, { transaction: t });
-            if (camaALiberar) await camaALiberar.update({ estado: 'Libre' }, { transaction: t });
-        }
-
-        await t.commit();
-        req.flash('success', 'Admisión actualizada con éxito.');
-        res.redirect('/admisiones');
-    } catch (error) {
-        await t.rollback();
-        console.error('Error al actualizar admisión:', error);
-        req.flash('error', `Error al actualizar: ${error.message}`);
-        res.redirect(`/admisiones/editar/${req.params.id_admision}`);
-    }
-};
-
-exports.cancelarAdmision = async (req, res) => {
-    const t = await sequelize.transaction();
-    try {
-        const { id_admision } = req.params;
-        const admision = await Admision.findByPk(id_admision, { transaction: t });
-        if (!admision) {
-            throw new Error('Admisión no encontrada.');
-        }
-        if (admision.estado_admision !== 'Activa') {
-            throw new Error('No se puede cancelar una admisión que no esté activa.');
-        }
-        await admision.update({ estado_admision: 'Cancelada', fecha_alta: new Date() }, { transaction: t });
-        if (admision.id_cama_asignada) {
-            const cama = await Cama.findByPk(admision.id_cama_asignada, { transaction: t });
-            if (cama) {
-                await cama.update({ estado: 'Libre' }, { transaction: t });
-            }
-        }
-        await t.commit();
-        req.flash('success', 'Admisión cancelada con éxito.');
-        res.redirect('/admisiones');
-    } catch (error) {
-        await t.rollback();
-        console.error('Error al cancelar admisión:', error);
-        req.flash('error', `Error al cancelar la admisión: ${error.message}`);
-        res.redirect('/admisiones');
-    }
-};
-
-exports.darAlta = async (req, res) => {
-    try {
-        const { id_admision } = req.params;
-        const admision = await Admision.findByPk(id_admision);
-        if (!admision || admision.estado_admision !== 'Activa') {
-            req.flash('error', 'No se puede dar de alta una admisión que no esté activa.');
-            return res.redirect('/admisiones');
-        }
-        res.redirect(`/altas/nueva/${id_admision}`);
-    } catch (error) {
-        console.error('Error al redirigir para dar de alta:', error);
-        req.flash('error', 'Error al preparar el alta del paciente.');
-        res.redirect('/admisiones');
-    }
-};
-
 exports.verDetalles = async (req, res) => {
     try {
         const admision = await Admision.findByPk(req.params.id_admision, {
@@ -257,6 +129,7 @@ exports.verDetalles = async (req, res) => {
                 {
                     model: Cama,
                     as: 'cama',
+                    required: false,
                     include: [{ model: Habitacion, as: 'habitacion', include: [{ model: Ala, as: 'ala' }] }]
                 },
                 { model: Evaluacion, as: 'evaluaciones', include: [{ model: Medico, as: 'medico' }], order: [['fecha_evaluacion', 'DESC']] },
@@ -277,5 +150,81 @@ exports.verDetalles = async (req, res) => {
         console.error('Error al ver detalles de admisión:', error);
         req.flash('error', 'Error al cargar los detalles de la admisión.');
         res.redirect('/admisiones');
+    }
+};
+
+exports.formularioEditar = async (req, res) => {
+    try {
+        const admision = await Admision.findByPk(req.params.id_admision, {
+            include: [{ model: Paciente, as: 'paciente' }, { model: Cama, as: 'cama' }]
+        });
+        if (!admision) {
+            req.flash('error', 'Admisión no encontrada.');
+            return res.redirect('/admisiones');
+        }
+        const camasDisponibles = await Cama.findAll({
+            where: {
+                [Op.or]: [
+                    { estado: 'Libre' },
+                    { id_cama: admision.id_cama_asignada || null }
+                ]
+            },
+            include: [{ model: Habitacion, as: 'habitacion', include: [{ model: Ala, as: 'ala' }] }]
+        });
+        res.render('admisiones/editar', {
+            title: `Editar Admisión #${admision.id_admision}`,
+            admision,
+            camasDisponibles,
+            error: req.flash('error')
+        });
+    } catch (error) {
+        console.error('Error al cargar formulario de edición:', error);
+        req.flash('error', 'Error al preparar el formulario de edición.');
+        res.redirect('/admisiones');
+    }
+};
+
+exports.actualizarAdmision = async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+        const { id_admision } = req.params;
+        const { motivo_internacion, id_cama_asignada, estado_admision } = req.body;
+        const admision = await Admision.findByPk(id_admision, { transaction: t });
+        if (!admision) {
+            throw new Error('Admisión no encontrada.');
+        }
+
+        const oldCamaId = admision.id_cama_asignada;
+        const newCamaId = id_cama_asignada ? parseInt(id_cama_asignada, 10) : oldCamaId;
+
+        await admision.update({
+            motivo_internacion,
+            estado_admision,
+            id_cama_asignada: newCamaId,
+            fecha_alta: (estado_admision === 'Dada de Alta' || estado_admision === 'Cancelada') ? new Date() : null
+        }, { transaction: t });
+
+        if (newCamaId && newCamaId !== oldCamaId) {
+            const nuevaCama = await Cama.findByPk(newCamaId, { transaction: t, lock: t.LOCK.UPDATE });
+            if (!nuevaCama || nuevaCama.estado !== 'Libre') {
+                throw new Error('La nueva cama seleccionada no está disponible.');
+            }
+            await nuevaCama.update({ estado: 'Ocupada' }, { transaction: t });
+            if (oldCamaId) {
+                const oldCama = await Cama.findByPk(oldCamaId, { transaction: t });
+                if (oldCama) await oldCama.update({ estado: 'Libre' }, { transaction: t });
+            }
+        } else if ((estado_admision === 'Dada de Alta' || estado_admision === 'Cancelada') && oldCamaId) {
+            const camaALiberar = await Cama.findByPk(oldCamaId, { transaction: t });
+            if (camaALiberar) await camaALiberar.update({ estado: 'En Limpieza' }, { transaction: t });
+        }
+        await t.commit();
+        req.flash('success', 'Admisión actualizada con éxito.');
+        res.redirect('/admisiones');
+    } catch (error) {
+        await t.rollback();
+        console.error('Error al actualizar admisión:', error);
+        req.flash('error', `Error al actualizar: ${error.message}`);
+        res.redirect(`/admisiones/editar/${req.params.id_admision}`);
     }
 };
