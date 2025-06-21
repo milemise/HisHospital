@@ -4,11 +4,7 @@ exports.listarAdmisiones = async (req, res) => {
     try {
         const admisiones = await Admision.findAll({
             include: [
-                {
-                    model: Paciente,
-                    as: 'paciente',
-                    attributes: ['id_paciente', 'nombre', 'apellido', 'dni', 'genero']
-                },
+                { model: Paciente, as: 'paciente' },
                 {
                     model: Cama,
                     as: 'cama',
@@ -39,23 +35,21 @@ exports.listarAdmisiones = async (req, res) => {
 
 exports.formularioNueva = async (req, res) => {
     try {
-        const pacientes = await Paciente.findAll({
-            attributes: ['id_paciente', 'nombre', 'apellido', 'dni', 'genero'],
-            order: [['apellido', 'ASC'], ['nombre', 'ASC']]
-        });
+        const pacientes = await Paciente.findAll({ order: [['apellido', 'ASC'], ['nombre', 'ASC']] });
         const camasDisponibles = await Cama.findAll({
             where: { estado: 'Libre' },
-            include: [{ model: Habitacion, as: 'habitacion', include: [{ model: Ala, as: 'ala' }] }],
+            include: [{
+                model: Habitacion,
+                as: 'habitacion',
+                include: [{ model: Ala, as: 'ala' }]
+            }],
             order: [['id_cama', 'ASC']]
         });
-        const obrasSociales = await ObraSocial.findAll();
         res.render('admisiones/nueva', {
-            pacientes: pacientes,
-            camasDisponibles: camasDisponibles,
-            obrasSociales: obrasSociales,
-            pacienteSeleccionado: null,
-            error: req.flash('error'),
-            success: req.flash('success')
+            pacientes,
+            camasDisponibles,
+            title: 'Nueva Admisión',
+            error: req.flash('error')
         });
     } catch (error) {
         console.error('Error al cargar formulario de nueva admisión:', error);
@@ -67,20 +61,18 @@ exports.formularioNueva = async (req, res) => {
 exports.guardarAdmision = async (req, res) => {
     const t = await sequelize.transaction();
     try {
-        const {
-            id_paciente_seleccionado, motivo_internacion, id_cama_asignada
-        } = req.body;
+        const { id_paciente, id_cama_asignada, motivo_internacion } = req.body;
 
-        if (!id_paciente_seleccionado || !id_cama_asignada || !motivo_internacion) {
+        if (!id_paciente || !id_cama_asignada || !motivo_internacion) {
             throw new Error('Debe seleccionar un paciente, una cama y especificar un motivo.');
         }
 
         const cama = await Cama.findByPk(id_cama_asignada, { transaction: t, lock: t.LOCK.UPDATE });
         if (!cama || cama.estado !== 'Libre') {
-            throw new Error('La cama seleccionada ya no está disponible.');
+            throw new Error('La cama seleccionada ya no se encuentra disponible.');
         }
 
-        const paciente = await Paciente.findByPk(id_paciente_seleccionado, { transaction: t });
+        const paciente = await Paciente.findByPk(id_paciente, { transaction: t });
         if (!paciente) {
             throw new Error('El paciente seleccionado no existe.');
         }
@@ -104,7 +96,7 @@ exports.guardarAdmision = async (req, res) => {
         }
 
         await Admision.create({
-            id_paciente: id_paciente_seleccionado,
+            id_paciente: id_paciente,
             id_cama_asignada: id_cama_asignada,
             motivo_internacion: motivo_internacion,
             fecha_ingreso: new Date(),
@@ -123,7 +115,6 @@ exports.guardarAdmision = async (req, res) => {
     }
 };
 
-
 exports.formularioEditar = async (req, res) => {
     try {
         const admision = await Admision.findByPk(req.params.id_admision, {
@@ -136,10 +127,12 @@ exports.formularioEditar = async (req, res) => {
                 }
             ]
         });
+
         if (!admision) {
             req.flash('error', 'Admisión no encontrada.');
             return res.redirect('/admisiones');
         }
+
         const camasDisponibles = await Cama.findAll({
             where: {
                 [sequelize.Op.or]: [
@@ -149,12 +142,12 @@ exports.formularioEditar = async (req, res) => {
             },
             include: [{ model: Habitacion, as: 'habitacion', include: [{ model: Ala, as: 'ala' }] }]
         });
+
         res.render('admisiones/editar', {
-            title: `Editar Admisión ${admision.id_admision}`,
-            admision: admision,
-            camasDisponibles: camasDisponibles,
-            error: req.flash('error'),
-            success: req.flash('success')
+            title: `Editar Admisión #${admision.id_admision}`,
+            admision,
+            camasDisponibles,
+            error: req.flash('error')
         });
     } catch (error) {
         console.error('Error al cargar formulario de edición:', error);
@@ -193,15 +186,11 @@ exports.actualizarAdmision = async (req, res) => {
 
             if (oldCamaId) {
                 const oldCama = await Cama.findByPk(oldCamaId, { transaction: t });
-                if (oldCama) {
-                    await oldCama.update({ estado: 'Libre' }, { transaction: t });
-                }
+                if (oldCama) await oldCama.update({ estado: 'Libre' }, { transaction: t });
             }
         } else if ((estado_admision === 'Dada de Alta' || estado_admision === 'Cancelada') && oldCamaId) {
             const camaALiberar = await Cama.findByPk(oldCamaId, { transaction: t });
-            if (camaALiberar) {
-                await camaALiberar.update({ estado: 'Libre' }, { transaction: t });
-            }
+            if (camaALiberar) await camaALiberar.update({ estado: 'Libre' }, { transaction: t });
         }
 
         await t.commit();
@@ -212,6 +201,51 @@ exports.actualizarAdmision = async (req, res) => {
         console.error('Error al actualizar admisión:', error);
         req.flash('error', `Error al actualizar: ${error.message}`);
         res.redirect(`/admisiones/editar/${req.params.id_admision}`);
+    }
+};
+
+exports.cancelarAdmision = async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+        const { id_admision } = req.params;
+        const admision = await Admision.findByPk(id_admision, { transaction: t });
+        if (!admision) {
+            throw new Error('Admisión no encontrada.');
+        }
+        if (admision.estado_admision !== 'Activa') {
+            throw new Error('No se puede cancelar una admisión que no esté activa.');
+        }
+        await admision.update({ estado_admision: 'Cancelada', fecha_alta: new Date() }, { transaction: t });
+        if (admision.id_cama_asignada) {
+            const cama = await Cama.findByPk(admision.id_cama_asignada, { transaction: t });
+            if (cama) {
+                await cama.update({ estado: 'Libre' }, { transaction: t });
+            }
+        }
+        await t.commit();
+        req.flash('success', 'Admisión cancelada con éxito.');
+        res.redirect('/admisiones');
+    } catch (error) {
+        await t.rollback();
+        console.error('Error al cancelar admisión:', error);
+        req.flash('error', `Error al cancelar la admisión: ${error.message}`);
+        res.redirect('/admisiones');
+    }
+};
+
+exports.darAlta = async (req, res) => {
+    try {
+        const { id_admision } = req.params;
+        const admision = await Admision.findByPk(id_admision);
+        if (!admision || admision.estado_admision !== 'Activa') {
+            req.flash('error', 'No se puede dar de alta una admisión que no esté activa.');
+            return res.redirect('/admisiones');
+        }
+        res.redirect(`/altas/nueva/${id_admision}`);
+    } catch (error) {
+        console.error('Error al redirigir para dar de alta:', error);
+        req.flash('error', 'Error al preparar el alta del paciente.');
+        res.redirect('/admisiones');
     }
 };
 
@@ -235,6 +269,7 @@ exports.verDetalles = async (req, res) => {
         }
         res.render('admisiones/detalles', {
             admision,
+            title: `Detalles de Admisión #${admision.id_admision}`,
             success: req.flash('success'),
             error: req.flash('error')
         });
